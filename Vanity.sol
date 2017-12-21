@@ -220,7 +220,7 @@ contract VanityURL is Ownable,Pausable {
   }
 
   /*
-  function to change vanity URL owner
+  function to transfer ownership for Vanity URL
   */
   function transferOwnershipForVanityURL(address _to) public {
     require(bytes(address_vanity_mapping[_to]).length != 0);
