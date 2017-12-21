@@ -147,7 +147,7 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
   using SafeMath for uint256;
 
   string constant public name = 'SpringRole Pre Mint Token';
-  string constant public symbol = 'SRT';
+  string constant public symbol = 'SRPMT';
   uint constant public decimals = 18;
   uint256 public totalSupply;
 
