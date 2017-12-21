@@ -57,15 +57,60 @@ contract Ownable {
 
 }
 
+/**
+ * @title Pausable
+ * @dev Base contract which allows children to implement an emergency stop mechanism.
+ */
+
+contract Pausable is Ownable {
+  event Pause();
+  event Unpause();
+
+  bool public paused = false;
+
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is not paused.
+   */
+  modifier whenNotPaused() {
+    require(!paused);
+    _;
+  }
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is paused.
+   */
+  modifier whenPaused() {
+    require(paused);
+    _;
+  }
+
+  /**
+   * @dev called by the owner to pause, triggers stopped state
+   */
+  function pause() onlyOwner whenNotPaused public {
+    paused = true;
+    Pause();
+  }
+
+  /**
+   * @dev called by the owner to unpause, returns to normal state
+   */
+  function unpause() onlyOwner whenPaused public {
+    paused = false;
+    Unpause();
+  }
+}
+
 
 /**
  * @title VanityURL
- * @dev The VanityURL contract provides functionality to reserve vanitry URLs. 
- * Go to https://beta.springrole.com to reserve. 
+ * @dev The VanityURL contract provides functionality to reserve vanitry URLs.
+ * Go to https://beta.springrole.com to reserve.
  */
 
 
-contract VanityURL is Ownable {
+contract VanityURL is Ownable,Pausable {
 
   // This declares a state variable that would store the contract address
   SRTToken public tokenAddress;
@@ -90,6 +135,16 @@ contract VanityURL is Ownable {
   }
 
   event VanityReserved(address _from, string _vanity_url);
+
+  /* function to update Token address */
+  function updateTokenAddress (address _tokenAddress) onlyOwner public {
+    tokenAddress = SRTToken(_tokenAddress);
+  }
+
+  /* function to update transferTokenTo */
+  function updateTokenTransferAddress (address _transferTokenTo) onlyOwner public {
+    transferTokenTo = _transferTokenTo;
+  }
 
   /* function to add reserve keyword */
   function addReservedKeyword (string _keyword) onlyOwner public {
@@ -120,7 +175,7 @@ contract VanityURL is Ownable {
     5. Transfer the token
     6. Update the mapping variables
   */
-  function reserve(string _vanity_url) public {
+  function reserve(string _vanity_url) whenNotPaused public {
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
     require(bytes(address_vanity_mapping[msg.sender]).length == 0);
@@ -155,7 +210,7 @@ contract VanityURL is Ownable {
     5. Update the mapping variables
   */
 
-  function changeVanityURL(string _vanity_url) public {
+  function changeVanityURL(string _vanity_url) whenNotPaused public {
     require(bytes(address_vanity_mapping[msg.sender]).length != 0);
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
@@ -167,7 +222,7 @@ contract VanityURL is Ownable {
   /*
   function to change vanity URL owner
   */
-  function transferOwnershipForVanityURL(address _to) public {
+  function transferOwnershipForVanityURL(address _to) whenNotPaused public {
     require(bytes(address_vanity_mapping[_to]).length == 0);
     address_vanity_mapping[_to] = address_vanity_mapping[msg.sender];
     vanity_address_mapping[_vanity_url] = _to;
