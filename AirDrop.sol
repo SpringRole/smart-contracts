@@ -63,14 +63,14 @@ contract AirDrop is Ownable {
     Airdrop function which take up a array of address and amount and call the
     transfer function to send the token
    */
-  function doAirDrop(address[] addrs, uint256 _amount) onlyOwner public returns (bool success) {
-    uint256 count = addrs.length;
+  function doAirDrop(address[] _address, uint256 _amount) onlyOwner public returns (bool success) {
+    uint256 count = _address.length;
     for (uint256 i = 0; i < count; i++)
     {
       /* calling transfer function from contract */
-      tokenInstance.transfer(addrs [i],_amount);
+      tokenInstance.transfer(_address [i],_amount);
       /* logging event */
-      AddressLog(addrs [i],_amount);
+      AddressLog(_address [i],_amount);
     }
   }
 }

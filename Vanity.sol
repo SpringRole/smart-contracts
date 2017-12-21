@@ -151,6 +151,14 @@ contract VanityURL is Ownable,Pausable {
     reservedKeywords[_keyword] = 1;
   }
 
+
+  /* 
+   function to remove reserved keyword 
+  */
+  function removeReservedKeyword (string _keyword) onlyOwner public {
+    delete(reservedKeywords[_keyword]);
+  }
+
   /* function to set reserve pricing */
   function setReservePricing (uint256 _reservePricing) onlyOwner public {
     reservePricing = _reservePricing;
@@ -184,6 +192,7 @@ contract VanityURL is Ownable,Pausable {
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
   }
+
   /*
   function to verify vanityURL
   1. Minimum length 4
@@ -220,13 +229,28 @@ contract VanityURL is Ownable,Pausable {
   }
 
   /*
-  function to change vanity URL owner
+  function to transfer ownership for Vanity URL
   */
-  function transferOwnershipForVanityURL(address _to) public {
+  function transferOwnershipForVanityURL(address _to) whenNotPaused public {
     require(bytes(address_vanity_mapping[_to]).length != 0);
     address_vanity_mapping[_to] = address_vanity_mapping[msg.sender];
     vanity_address_mapping[address_vanity_mapping[msg.sender]] = _to;
     delete(address_vanity_mapping[msg.sender]);
+  }
+
+  /*
+    function to kill contract 
+  */
+
+  function kill() onlyOwner {
+    suicide(owner);
+  }
+
+  /*
+    transfer eth recived to owner account if any
+  */
+  function() payable {
+    owner.transfer(msg.value);
   }
 
 }
