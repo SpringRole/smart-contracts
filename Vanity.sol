@@ -222,10 +222,10 @@ contract VanityURL is Ownable,Pausable {
   /*
   function to change vanity URL owner
   */
-  function transferOwnershipForVanityURL(address _to) whenNotPaused public {
-    require(bytes(address_vanity_mapping[_to]).length == 0);
+  function transferOwnershipForVanityURL(address _to) public {
+    require(bytes(address_vanity_mapping[_to]).length != 0);
     address_vanity_mapping[_to] = address_vanity_mapping[msg.sender];
-    vanity_address_mapping[_vanity_url] = _to;
+    vanity_address_mapping[address_vanity_mapping[msg.sender]] = _to;
     delete(address_vanity_mapping[msg.sender]);
   }
 
