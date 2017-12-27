@@ -105,7 +105,7 @@ contract Pausable is Ownable {
 
 /**
  * @title VanityURL
- * @dev The VanityURL contract provides functionality to reserve vanitry URLs.
+ * @dev The VanityURL contract provides functionality to reserve vanity URLs.
  * Go to https://beta.springrole.com to reserve.
  */
 
