@@ -184,6 +184,7 @@ contract VanityURL is Ownable,Pausable {
     6. Update the mapping variables
   */
   function reserve(string _vanity_url) whenNotPaused public {
+    _vanity_url = _toLower(_vanity_url);
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
     require(bytes(address_vanity_mapping[msg.sender]).length == 0);
@@ -192,6 +193,25 @@ contract VanityURL is Ownable,Pausable {
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
   }
+
+  /*
+  function to make lowercase
+  */
+
+  function _toLower(string str) internal returns (string) {
+		bytes memory bStr = bytes(str);
+		bytes memory bLower = new bytes(bStr.length);
+		for (uint i = 0; i < bStr.length; i++) {
+			// Uppercase character...
+			if ((bStr[i] >= 65) && (bStr[i] <= 90)) {
+				// So we add 32 to make it lowercase
+				bLower[i] = bytes1(int(bStr[i]) + 32);
+			} else {
+				bLower[i] = bStr[i];
+			}
+		}
+		return string(bLower);
+	}
 
   /*
   function to verify vanityURL
@@ -221,6 +241,7 @@ contract VanityURL is Ownable,Pausable {
 
   function changeVanityURL(string _vanity_url) whenNotPaused public {
     require(bytes(address_vanity_mapping[msg.sender]).length != 0);
+    _vanity_url = _toLower(_vanity_url);
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
     require(reservedKeywords[_vanity_url] != 1);
