@@ -259,8 +259,8 @@ contract VanityURL is Ownable,Pausable {
     require(bytes(address_vanity_mapping[msg.sender]).length != 0);
     address_vanity_mapping[_to] = address_vanity_mapping[msg.sender];
     vanity_address_mapping[address_vanity_mapping[msg.sender]] = _to;
-    delete(address_vanity_mapping[msg.sender]);
     VanityReserved(_to, address_vanity_mapping[msg.sender]);
+    delete(address_vanity_mapping[msg.sender]);
   }
 
   /*
