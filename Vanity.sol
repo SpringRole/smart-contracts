@@ -192,6 +192,7 @@ contract VanityURL is Ownable,Pausable {
     require(tokenAddress.doTransfer(msg.sender,transferTokenTo,reservePricing));
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
+    VanityReserved(msg.sender, _vanity_url);
   }
 
   /*
@@ -247,15 +248,18 @@ contract VanityURL is Ownable,Pausable {
     require(reservedKeywords[_vanity_url] != 1);
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
+    VanityReserved(msg.sender, _vanity_url);
   }
 
   /*
   function to transfer ownership for Vanity URL
   */
   function transferOwnershipForVanityURL(address _to) whenNotPaused public {
-    require(bytes(address_vanity_mapping[_to]).length != 0);
+    require(bytes(address_vanity_mapping[_to]).length == 0);
+    require(bytes(address_vanity_mapping[msg.sender]).length != 0);
     address_vanity_mapping[_to] = address_vanity_mapping[msg.sender];
     vanity_address_mapping[address_vanity_mapping[msg.sender]] = _to;
+    VanityReserved(_to, address_vanity_mapping[msg.sender]);
     delete(address_vanity_mapping[msg.sender]);
   }
 
