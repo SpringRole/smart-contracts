@@ -134,7 +134,7 @@ contract VanityURL is Ownable,Pausable {
     transferTokenTo = _transferTokenTo;
   }
 
-  event VanityReserved(address _from, string _vanity_url);
+  event VanityReserved(address _to, string _vanity_url);
   event VanityTransfered(address _to,address _from, string _vanity_url);
   event VanityReleased(string _vanity_url);
 
