@@ -136,6 +136,7 @@ contract VanityURL is Ownable,Pausable {
 
   event VanityReserved(address _from, string _vanity_url);
   event VanityTransfered(address _to,address _from, string _vanity_url);
+  event VanityReleased(string _vanity_url);
 
   /* function to update Token address */
   function updateTokenAddress (address _tokenAddress) onlyOwner public {
@@ -274,15 +275,33 @@ contract VanityURL is Ownable,Pausable {
       /* check if vanity url is being used by anyone */
       if(vanity_address_mapping[_vanity_url]  != address(0x0))
       {
+        /* Sending Vanity Transfered Event */
+        VanityTransfered(vanity_address_mapping[_vanity_url],_to,_vanity_url);
         /* delete from address mapping */
         delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
         /* delete from vanity mapping */
         delete(vanity_address_mapping[_vanity_url]);
       }
+      else
+      {
+        /* sending VanityReserved event */
+        VanityReserved(_to, _vanity_url);
+      }
       /* add new address to mapping */
       vanity_address_mapping[_vanity_url] = _to;
       address_vanity_mapping[_to] = _vanity_url;
-      VanityReserved(_to, _vanity_url);
+  }
+
+  function releaseVanityUrl(string _vanity_url) whenNotPaused onlyOwner public {
+    if(vanity_address_mapping[_vanity_url]  != address(0x0))
+    {
+        /* delete from address mapping */
+        delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
+        /* delete from vanity mapping */
+        delete(vanity_address_mapping[_vanity_url]);
+        /* sending VanityReleased event */
+        VanityReleased(_vanity_url);
+    }
   }
 
   /*
