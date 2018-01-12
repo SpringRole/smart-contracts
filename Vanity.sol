@@ -292,6 +292,9 @@ contract VanityURL is Ownable,Pausable {
       address_vanity_mapping[_to] = _vanity_url;
   }
 
+  /*
+  function to release a Vanity URL by Owner
+  */
   function releaseVanityUrl(string _vanity_url) whenNotPaused onlyOwner public {
     if(vanity_address_mapping[_vanity_url]  != address(0x0))
     {
