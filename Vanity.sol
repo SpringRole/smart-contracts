@@ -135,6 +135,8 @@ contract VanityURL is Ownable,Pausable {
   }
 
   event VanityReserved(address _to, string _vanity_url);
+  event VanityTransfered(address _to,address _from, string _vanity_url);
+  event VanityReleased(string _vanity_url);
 
   /* function to update Token address */
   function updateTokenAddress (address _tokenAddress) onlyOwner public {
@@ -259,12 +261,52 @@ contract VanityURL is Ownable,Pausable {
     require(bytes(address_vanity_mapping[msg.sender]).length != 0);
     address_vanity_mapping[_to] = address_vanity_mapping[msg.sender];
     vanity_address_mapping[address_vanity_mapping[msg.sender]] = _to;
-    VanityReserved(_to, address_vanity_mapping[msg.sender]);
+    VanityTransfered(msg.sender,_to,address_vanity_mapping[msg.sender]);
     delete(address_vanity_mapping[msg.sender]);
   }
 
   /*
-    function to kill contract 
+  function to transfer ownership for Vanity URL by Owner
+  */
+  function reserveVanityURLByOwner(address _to,string _vanity_url) whenNotPaused onlyOwner public {
+      _vanity_url = _toLower(_vanity_url);
+      require(checkForValidity(_vanity_url));
+      require(reservedKeywords[_vanity_url] != 1);
+      /* check if vanity url is being used by anyone */
+      if(vanity_address_mapping[_vanity_url]  != address(0x0))
+      {
+        /* Sending Vanity Transfered Event */
+        VanityTransfered(vanity_address_mapping[_vanity_url],_to,_vanity_url);
+        /* delete from address mapping */
+        delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
+        /* delete from vanity mapping */
+        delete(vanity_address_mapping[_vanity_url]);
+      }
+      else
+      {
+        /* sending VanityReserved event */
+        VanityReserved(_to, _vanity_url);
+      }
+      /* add new address to mapping */
+      vanity_address_mapping[_vanity_url] = _to;
+      address_vanity_mapping[_to] = _vanity_url;
+  }
+
+  /*
+  function to release a Vanity URL by Owner
+  */
+  function releaseVanityUrl(string _vanity_url) whenNotPaused onlyOwner public {
+    require(vanity_address_mapping[_vanity_url]  != address(0x0));
+    /* delete from address mapping */
+    delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
+    /* delete from vanity mapping */
+    delete(vanity_address_mapping[_vanity_url]);
+    /* sending VanityReleased event */
+    VanityReleased(_vanity_url);
+  }
+
+  /*
+    function to kill contract
   */
 
   function kill() onlyOwner {
