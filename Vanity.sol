@@ -296,15 +296,13 @@ contract VanityURL is Ownable,Pausable {
   function to release a Vanity URL by Owner
   */
   function releaseVanityUrl(string _vanity_url) whenNotPaused onlyOwner public {
-    if(vanity_address_mapping[_vanity_url]  != address(0x0))
-    {
-        /* delete from address mapping */
-        delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
-        /* delete from vanity mapping */
-        delete(vanity_address_mapping[_vanity_url]);
-        /* sending VanityReleased event */
-        VanityReleased(_vanity_url);
-    }
+    require(vanity_address_mapping[_vanity_url]  != address(0x0));
+    /* delete from address mapping */
+    delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
+    /* delete from vanity mapping */
+    delete(vanity_address_mapping[_vanity_url]);
+    /* sending VanityReleased event */
+    VanityReleased(_vanity_url);
   }
 
   /*
