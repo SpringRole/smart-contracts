@@ -150,11 +150,11 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
   string constant public symbol = 'SRPMT';
   uint constant public decimals = 18;
   uint256 public totalSupply;
+  uint256 public maxSupply;
 
   /* Contructor function to set initial balance and assign to owner*/
-  function SRTToken(uint256 _totalSupply){
-    totalSupply = _totalSupply * 10**decimals;
-    balances[msg.sender] = balances[msg.sender].add(totalSupply);
+  function SRTToken(uint256 _maxSupply){
+    maxSupply = _maxSupply * 10**decimals;
   }
 
   /*
@@ -173,6 +173,20 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     Transfer(_from, _to, _value);
+    return true;
+  }
+
+  /**
+ * @dev Function to mint tokens
+ * @param _to The address that will receive the minted tokens.
+ * @param _amount The amount of tokens to mint.
+ * @return A boolean that indicates if the operation was successful.
+ */
+  function mint(uint256 _amount) onlyOwner public returns (bool) {
+    require(maxSupply>(totalSupply.add(_amount)));
+    totalSupply = totalSupply.add(_amount);
+    balances[msg.sender] = balances[msg.sender].add(_amount);
+    Transfer(address(0), msg.sender, _amount);
     return true;
   }
 
