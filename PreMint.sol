@@ -176,12 +176,9 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
     return true;
   }
 
-  /**
- * @dev Function to mint tokens
- * @param _to The address that will receive the minted tokens.
- * @param _amount The amount of tokens to mint.
- * @return A boolean that indicates if the operation was successful.
- */
+  /*
+  mint function will allow to mint tokens and assign to owner
+  */
   function mint(uint256 _amount) onlyOwner public returns (bool) {
     require(maxSupply>(totalSupply.add(_amount)));
     totalSupply = totalSupply.add(_amount);
