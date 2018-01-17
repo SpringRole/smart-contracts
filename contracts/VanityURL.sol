@@ -1,15 +1,7 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
-/**
- * @title Token
- * @dev Simpler version of ERC20 interface
- */
-contract Token {
-  function transfer(address to, uint256 value) public returns (bool);
-  event Transfer(address indexed from, address indexed to, uint256 value);
-}
 
-contract SRTToken is Token{
+contract Token{
 
   function doTransfer(address _from, address _to, uint256 _value) public returns (bool);
 
@@ -113,7 +105,7 @@ contract Pausable is Ownable {
 contract VanityURL is Ownable,Pausable {
 
   // This declares a state variable that would store the contract address
-  SRTToken public tokenAddress;
+  Token public tokenAddress;
   // This declares a state variable that would store mapping for reserved _keyword
   mapping (string => uint) reservedKeywords;
   // This declares a state variable that mapping for vanityURL to address
@@ -129,7 +121,7 @@ contract VanityURL is Ownable,Pausable {
     constructor function to set token address & Pricing for reserving and token transfer address
    */
   function VanityURL(address _tokenAddress, uint256 _reservePricing, address _transferTokenTo){
-    tokenAddress = SRTToken(_tokenAddress);
+    tokenAddress = Token(_tokenAddress);
     reservePricing = _reservePricing;
     transferTokenTo = _transferTokenTo;
   }
@@ -140,7 +132,7 @@ contract VanityURL is Ownable,Pausable {
 
   /* function to update Token address */
   function updateTokenAddress (address _tokenAddress) onlyOwner public {
-    tokenAddress = SRTToken(_tokenAddress);
+    tokenAddress = Token(_tokenAddress);
   }
 
   /* function to update transferTokenTo */
@@ -154,8 +146,8 @@ contract VanityURL is Ownable,Pausable {
   }
 
 
-  /* 
-   function to remove reserved keyword 
+  /*
+   function to remove reserved keyword
   */
   function removeReservedKeyword (string _keyword) onlyOwner public {
     delete(reservedKeywords[_keyword]);
@@ -310,7 +302,7 @@ contract VanityURL is Ownable,Pausable {
   */
 
   function kill() onlyOwner {
-    suicide(owner);
+    selfdestruct(owner);
   }
 
   /*
