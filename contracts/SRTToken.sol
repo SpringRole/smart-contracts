@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 /**
  * @title ERC20Basic
@@ -176,9 +176,11 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
     return true;
   }
 
-  /*
-  mint function will allow to mint tokens and assign to owner
-  */
+  /**
+ * @dev Function to mint tokens
+ * @param _amount The amount of tokens to mint.
+ * @return A boolean that indicates if the operation was successful.
+ */
   function mint(uint256 _amount) onlyOwner public returns (bool) {
     require(maxSupply>(totalSupply.add(_amount)));
     totalSupply = totalSupply.add(_amount);
