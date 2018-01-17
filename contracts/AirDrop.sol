@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 /**
  * @title Token
@@ -63,7 +63,7 @@ contract AirDrop is Ownable {
     Airdrop function which take up a array of address and amount and call the
     transfer function to send the token
    */
-  function doAirDrop(address[] _address, uint256 _amount) onlyOwner public returns (bool success) {
+  function doAirDrop(address[] _address, uint256 _amount) onlyOwner public returns (bool) {
     uint256 count = _address.length;
     for (uint256 i = 0; i < count; i++)
     {
