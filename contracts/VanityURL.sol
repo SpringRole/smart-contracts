@@ -106,8 +106,6 @@ contract VanityURL is Ownable,Pausable {
 
   // This declares a state variable that would store the contract address
   Token public tokenAddress;
-  // This declares a state variable that would store mapping for reserved _keyword
-  mapping (string => uint) reservedKeywords;
   // This declares a state variable that mapping for vanityURL to address
   mapping (string => address) vanity_address_mapping;
   // This declares a state variable that mapping for address to vanityURL
@@ -140,19 +138,6 @@ contract VanityURL is Ownable,Pausable {
     transferTokenTo = _transferTokenTo;
   }
 
-  /* function to add reserve keyword */
-  function addReservedKeyword (string _keyword) onlyOwner public {
-    reservedKeywords[_keyword] = 1;
-  }
-
-
-  /*
-   function to remove reserved keyword
-  */
-  function removeReservedKeyword (string _keyword) onlyOwner public {
-    delete(reservedKeywords[_keyword]);
-  }
-
   /* function to set reserve pricing */
   function setReservePricing (uint256 _reservePricing) onlyOwner public {
     reservePricing = _reservePricing;
@@ -182,7 +167,6 @@ contract VanityURL is Ownable,Pausable {
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
     require(bytes(address_vanity_mapping[msg.sender]).length == 0);
-    require(reservedKeywords[_vanity_url] != 1);
     require(tokenAddress.doTransfer(msg.sender,transferTokenTo,reservePricing));
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
@@ -239,7 +223,6 @@ contract VanityURL is Ownable,Pausable {
     _vanity_url = _toLower(_vanity_url);
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
-    require(reservedKeywords[_vanity_url] != 1);
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
     VanityReserved(msg.sender, _vanity_url);
@@ -263,7 +246,6 @@ contract VanityURL is Ownable,Pausable {
   function reserveVanityURLByOwner(address _to,string _vanity_url) whenNotPaused onlyOwner public {
       _vanity_url = _toLower(_vanity_url);
       require(checkForValidity(_vanity_url));
-      require(reservedKeywords[_vanity_url] != 1);
       /* check if vanity url is being used by anyone */
       if(vanity_address_mapping[_vanity_url]  != address(0x0))
       {

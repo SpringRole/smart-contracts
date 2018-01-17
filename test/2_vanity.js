@@ -16,9 +16,6 @@ contract('VanityURL', function(accounts) {
         }).then(function(minted) {
             return tokenInstance.transfer(accounts[1],10);
         }).then(function(transfer) {
-            // add admin as reserved keyword
-            return vanityInstance.addReservedKeyword('admin');
-        }).then(function(minted) {
             // add vanity contract to whitelist
             return tokenInstance.addWhiteListedContracts(vanityInstance.address);
         }).then(function(result) {
@@ -91,14 +88,6 @@ contract('VanityURL', function(accounts) {
             assert.equal(result,'casein',"reserve url should be case insensitive");
         }).catch(function(error){
             assert.isUndefined(error,"should be able to reserve a url")
-        })
-    });
-
-    it("should fail when tried to reserve reserved keywords", function() {
-        return vanityInstance.reserve('admin').then(function(instance){
-            assert.isUndefined(instance,"should fail when tried to reserve reserved keywords")
-        }).catch(function(error){
-            assert.isDefined(error,"should fail when tried to reserve reserved keywords")
         })
     });
 
