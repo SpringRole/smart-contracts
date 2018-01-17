@@ -178,8 +178,16 @@ contract('VanityURL', function(accounts) {
         })
     });
 
-    it("should error on change vanityURL when not assigned", function() {
+    it("should error on change vanityURL when address has no vanity", function() {
         return vanityInstance.changeVanityURL('noassigned',{from:accounts[5]}).then(function(instance){
+            assert.isUndefined(instance,"should error on change vanityURL when not assigned")
+        }).catch(function(error){
+            assert.isDefined(error,"should error on change vanityURL when not assigned")
+        })
+    });
+
+    it("should error on change vanityURL when vanity is in use", function() {
+        return vanityInstance.changeVanityURL('vinay035',{from:accounts[3]}).then(function(instance){
             assert.isUndefined(instance,"should error on change vanityURL when not assigned")
         }).catch(function(error){
             assert.isDefined(error,"should error on change vanityURL when not assigned")
