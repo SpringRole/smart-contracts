@@ -1,6 +1,14 @@
 pragma solidity ^0.4.18;
 
 /**
+* Token for SpringRole PreMint. This token is usable on the mainnet
+* Go to https://beta.springrole.com to start!
+* At the time of writing this contract, this token can be used for reserving vanity URL.
+* More features will be added soon. 
+*/
+
+
+/**
  * @title ERC20Basic
  * @dev Simpler version of ERC20 interface
  * @dev see https://github.com/ethereum/EIPs/issues/179
