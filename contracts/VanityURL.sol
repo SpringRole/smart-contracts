@@ -1,5 +1,9 @@
 pragma solidity ^0.4.18;
 
+/**
+* Contract for Vanity URL on SpringRole
+* Go to beta.springrole.com to try this out! 
+*/
 
 contract Token{
 
