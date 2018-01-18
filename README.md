@@ -3,6 +3,8 @@
 
 =================================================
 
+[![Build Status](https://travis-ci.org/SpringRole/smart-contracts.svg?branch=master)](https://travis-ci.org/SpringRole/smart-contracts)
+
 Steps to Run Tests
 
     1. npm install -g ethereumjs-testrpc
