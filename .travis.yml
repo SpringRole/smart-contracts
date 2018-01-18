@@ -1,0 +1,16 @@
+dist: trusty
+sudo: false
+
+language: node_js
+node_js:
+  - "7"
+
+install:
+  - npm install -g ethereumjs-testrpc
+  - npm install
+
+before_script:
+  - testrpc -l 6721975 > testrpc.log &
+
+script:
+  - npm test
