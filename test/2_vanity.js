@@ -177,4 +177,28 @@ contract('VanityURL', function(accounts) {
             assert.isUndefined(error,"owner should be able to call reserveVanityURLByOwner and assign a vanity to any address")
         })
     });
+
+    it("should error on change vanityURL when address has no vanity", function() {
+        return vanityInstance.changeVanityURL('noassigned',{from:accounts[5]}).then(function(instance){
+            assert.isUndefined(instance,"should error on change vanityURL when not assigned")
+        }).catch(function(error){
+            assert.isDefined(error,"should error on change vanityURL when not assigned")
+        })
+    });
+
+    it("should error on change vanityURL when vanity is in use", function() {
+        return vanityInstance.changeVanityURL('vinay035',{from:accounts[3]}).then(function(instance){
+            assert.isUndefined(instance,"should error on change vanityURL when not assigned")
+        }).catch(function(error){
+            assert.isDefined(error,"should error on change vanityURL when not assigned")
+        })
+    });
+
+    it("should be able to change vanityURL", function() {
+        return vanityInstance.changeVanityURL('vinay0351',{from:accounts[3]}).then(function(instance){
+            assert.isDefined(instance,"should be able to change vanityURL")
+        }).catch(function(error){
+            assert.isUndefined(error,"should be able to change vanityURL")
+        })
+    });
 });
