@@ -57,7 +57,6 @@ contract AirDrop is Ownable {
   function AirDrop(address _tokenAddress){
     tokenInstance = Token(_tokenAddress);
   }
-  event AddressLog(address _from, uint256 _amount);
 
   /*
     Airdrop function which take up a array of address and amount and call the
@@ -69,8 +68,6 @@ contract AirDrop is Ownable {
     {
       /* calling transfer function from contract */
       tokenInstance.transfer(_address [i],_amount);
-      /* logging event */
-      AddressLog(_address [i],_amount);
     }
   }
 }
