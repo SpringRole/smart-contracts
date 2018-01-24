@@ -34,6 +34,11 @@ contract StandardToken is ERC20 {
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
 
+    /**
+    * @dev transfer token for a specified address
+    * @param _to The address to transfer to.
+    * @param _value The amount to be transferred.
+    */
     function transfer(address _to, uint256 _value) returns (bool success) {
         require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -42,6 +47,12 @@ contract StandardToken is ERC20 {
         return true;
     }
 
+    /**
+    * @dev Transfer tokens from one address to another
+    * @param _from address The address which you want to send tokens from
+    * @param _to address The address which you want to transfer to
+    * @param _value uint256 the amout of tokens to be transfered
+    */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
         require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[_to] = balances[_to].add(_value);
@@ -51,18 +62,56 @@ contract StandardToken is ERC20 {
         return true;
     }
 
+    /**
+    * @dev Gets the balance of the specified address.
+    * @param _owner The address to query the the balance of.
+    * @return An uint256 representing the amount owned by the passed address.
+    */
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
     }
 
+    /**
+    * @dev Aprove the passed address to spend the specified amount of tokens on behalf of msg.sender.
+    * @param _spender The address which will spend the funds.
+    * @param _value The amount of tokens to be spent.
+    */
     function approve(address _spender, uint256 _value) returns (bool success) {
+        require(allowed[msg.sender][_spender] == 0);
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
     }
 
+    /**
+    * @dev Function to check the amount of tokens that an owner allowed to a spender.
+    * @param _owner address The address which owns the funds.
+    * @param _spender address The address which will spend the funds.
+    * @return A uint256 specifing the amount of tokens still available for the spender.
+    */
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
       return allowed[_owner][_spender];
+    }
+
+    /**
+     * To increment allowed value is better to use this function.
+     * From MonolithDAO Token.sol
+     */
+    function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
+        allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
+        Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        return true;
+    }
+
+    function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
+        uint oldValue = allowed[msg.sender][_spender];
+        if (_subtractedValue > oldValue) {
+            allowed[msg.sender][_spender] = 0;
+        } else {
+            allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
+        }
+        Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        return true;
     }
 }
 
@@ -131,22 +180,22 @@ library SafeMath {
 
 /* Contract class for adding removing whitelisted contracts */
 contract WhiteListedContracts is Ownable {
-  mapping (address => uint ) white_listed_contracts;
+  mapping (address => bool ) white_listed_contracts;
 
   //modifer to check if the contract given is white listed or not
   modifier whitelistedContractsOnly() {
-    require(white_listed_contracts[msg.sender] == 1);
+    require(white_listed_contracts[msg.sender]);
     _;
   }
 
   //add a contract to whitelist
   function addWhiteListedContracts (address _address) onlyOwner public {
-    white_listed_contracts[_address] = 1;
+    white_listed_contracts[_address] = true;
   }
 
   //remove contract from whitelist
   function removeWhiteListedContracts (address _address) onlyOwner public {
-    white_listed_contracts[_address] = 0;
+    white_listed_contracts[_address] = false;
   }
 }
 
@@ -160,17 +209,10 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
   uint256 public totalSupply;
   uint256 public maxSupply;
 
-  /* Contructor function to set initial balance and assign to owner*/
+  /* Contructor function to set maxSupply*/
   function SRTToken(uint256 _maxSupply){
-    maxSupply = _maxSupply * 10**decimals;
+    maxSupply = _maxSupply.mul(10**decimals);
   }
-
-  /*
-    transfer eth recived to owner account if any
-  */
-  function() payable {
-	  owner.transfer(msg.value);
-	}
 
   /*
   do transfer function will allow transfer from a _to to _from provided if the call
@@ -190,7 +232,7 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
  * @return A boolean that indicates if the operation was successful.
  */
   function mint(uint256 _amount) onlyOwner public returns (bool) {
-    require(maxSupply>(totalSupply.add(_amount)));
+    require (maxSupply >= (totalSupply.add(_amount)));
     totalSupply = totalSupply.add(_amount);
     balances[msg.sender] = balances[msg.sender].add(_amount);
     Transfer(address(0), msg.sender, _amount);
