@@ -163,22 +163,22 @@ library SafeMath {
 
 /* Contract class for adding removing whitelisted contracts */
 contract WhiteListedContracts is Ownable {
-  mapping (address => uint ) white_listed_contracts;
+  mapping (address => bool ) white_listed_contracts;
 
   //modifer to check if the contract given is white listed or not
   modifier whitelistedContractsOnly() {
-    require(white_listed_contracts[msg.sender] == 1);
+    require(white_listed_contracts[msg.sender]);
     _;
   }
 
   //add a contract to whitelist
   function addWhiteListedContracts (address _address) onlyOwner public {
-    white_listed_contracts[_address] = 1;
+    white_listed_contracts[_address] = true;
   }
 
   //remove contract from whitelist
   function removeWhiteListedContracts (address _address) onlyOwner public {
-    white_listed_contracts[_address] = 0;
+    white_listed_contracts[_address] = false;
   }
 }
 
