@@ -98,9 +98,7 @@ contract StandardToken is ERC20 {
     }
 
     /**
-     * approve should be called when allowed[_spender] == 0. To increment
-     * allowed value is better to use this function to avoid 2 calls (and wait until
-     * the first transaction is mined)
+     * To increment allowed value is better to use this function.
      * From MonolithDAO Token.sol
      */
     function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
