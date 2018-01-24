@@ -236,4 +236,63 @@ contract('SRTToken', function(accounts) {
             assert.equal(allowance.toNumber(), amount, "Amount wasn't correctly approved");
         });
     });
+
+    it("should increase approval 1 token correctly", function() {
+        var token;
+
+        var amount = 1;
+
+        var approval_starting_balance;
+        var approval_ending_balance;
+
+        return SRTToken.deployed().then(function(instance) {
+            token = instance;
+            return token.allowance.call(accounts[1],accounts[2]);
+        }).then(function(balance) {
+            approval_starting_balance = balance.toNumber();
+            return token.increaseApproval(accounts[2],amount,{from:accounts[1]});
+        }).then(function(allowance) {
+            return token.allowance.call(accounts[1],accounts[2]);
+        }).then(function(balance) {
+            approval_ending_balance = balance.toNumber();
+            assert.equal(approval_ending_balance, approval_starting_balance + amount, "Amount wasn't correctly approved");
+        });
+    });
+
+    it("should decrease approval 1 token correctly", function() {
+        var token;
+
+        var amount = 1;
+
+        var approval_starting_balance;
+        var approval_ending_balance;
+
+        return SRTToken.deployed().then(function(instance) {
+            token = instance;
+            return token.allowance.call(accounts[1],accounts[2]);
+        }).then(function(balance) {
+            approval_starting_balance = balance.toNumber();
+            return token.decreaseApproval(accounts[2],amount,{from:accounts[1]});
+        }).then(function(allowance) {
+            return token.allowance.call(accounts[1],accounts[2]);
+        }).then(function(balance) {
+            approval_ending_balance = balance.toNumber();
+            assert.equal(approval_ending_balance, approval_starting_balance - amount, "Amount wasn't correctly approved");
+        });
+    });
+
+    it("should fail when try to approve 1 token when allowance already exists", function() {
+        var token;
+
+        var amount = 1;
+
+        return SRTToken.deployed().then(function(instance) {
+            token = instance;
+            return token.approve(accounts[2],amount,{from:accounts[1]});
+        }).then(function(status) {
+            assert.isFalse(status, "transaction should have thrown error");
+        }).catch(function(err) {
+            assert.isDefined(err, "transaction should have thrown error");
+        });
+    });
 });
