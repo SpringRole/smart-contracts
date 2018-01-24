@@ -160,17 +160,10 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
   uint256 public totalSupply;
   uint256 public maxSupply;
 
-  /* Contructor function to set initial balance and assign to owner*/
+  /* Contructor function to set maxSupply*/
   function SRTToken(uint256 _maxSupply){
-    maxSupply = _maxSupply * 10**decimals;
+    maxSupply = _maxSupply.mul(10**decimals);
   }
-
-  /*
-    transfer eth recived to owner account if any
-  */
-  function() payable {
-	  owner.transfer(msg.value);
-	}
 
   /*
   do transfer function will allow transfer from a _to to _from provided if the call
@@ -190,7 +183,7 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
  * @return A boolean that indicates if the operation was successful.
  */
   function mint(uint256 _amount) onlyOwner public returns (bool) {
-    require(maxSupply>(totalSupply.add(_amount)));
+    require (maxSupply >= (totalSupply.add(_amount)));
     totalSupply = totalSupply.add(_amount);
     balances[msg.sender] = balances[msg.sender].add(_amount);
     Transfer(address(0), msg.sender, _amount);
