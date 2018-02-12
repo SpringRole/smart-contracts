@@ -1,10 +1,10 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 /**
 * Token for SpringRole PreMint. This token is usable on the mainnet
 * Go to https://beta.springrole.com to start!
 * At the time of writing this contract, this token can be used for reserving vanity URL.
-* More features will be added soon. 
+* More features will be added soon.
 */
 
 
