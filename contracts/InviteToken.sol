@@ -205,8 +205,8 @@ contract WhiteListedContracts is Ownable {
 contract InviteToken is Ownable,StandardToken,WhiteListedContracts {
   using SafeMath for uint256;
 
-  string constant public name = 'SpringRole Pre Mint Token';
-  string constant public symbol = 'SRPMT';
+  string constant public name = 'Invite Token';
+  string constant public symbol = 'INVITE';
   uint constant public decimals = 18;
   uint256 public totalSupply;
   uint256 public maxSupply;
