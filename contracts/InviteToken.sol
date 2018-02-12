@@ -73,7 +73,7 @@ contract StandardToken is ERC20 {
 
     /**
     * @dev Aprove the passed address to spend the specified amount of tokens on behalf of msg.sender.
-    * This only works when the allowance is 0. Cannot be used to change allowance. 
+    * This only works when the allowance is 0. Cannot be used to change allowance.
     * https://github.com/ethereum/EIPs/issues/738#issuecomment-336277632
     * @param _spender The address which will spend the funds.
     * @param _value The amount of tokens to be spent.
@@ -202,7 +202,7 @@ contract WhiteListedContracts is Ownable {
 }
 
 /* Contract class to mint tokens and transfer */
-contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
+contract InviteToken is Ownable,StandardToken,WhiteListedContracts {
   using SafeMath for uint256;
 
   string constant public name = 'SpringRole Pre Mint Token';
@@ -212,7 +212,7 @@ contract SRTToken is Ownable,StandardToken,WhiteListedContracts {
   uint256 public maxSupply;
 
   /* Contructor function to set maxSupply*/
-  function SRTToken(uint256 _maxSupply){
+  function InviteToken(uint256 _maxSupply){
     maxSupply = _maxSupply.mul(10**decimals);
   }
 

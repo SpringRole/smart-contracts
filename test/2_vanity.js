@@ -1,4 +1,4 @@
-var SRTToken = artifacts.require("./SRTToken.sol");
+var InviteToken = artifacts.require("./InviteToken.sol");
 var VanityURL = artifacts.require("./VanityURL.sol");
 
 contract('VanityURL', function(accounts) {
@@ -8,7 +8,7 @@ contract('VanityURL', function(accounts) {
     before(function () {
         return VanityURL.deployed().then(function(instance) {
             vanityInstance = instance;
-            return SRTToken.deployed();
+            return InviteToken.deployed();
         }).then(function(token) {
             tokenInstance = token;
             // mint 1000 tokens

@@ -1,4 +1,4 @@
-var SRTToken = artifacts.require("./SRTToken.sol");
+var InviteToken = artifacts.require("./InviteToken.sol");
 var AirDrop = artifacts.require("./AirDrop.sol");
 
 contract('Airdrop', function(accounts) {
@@ -9,7 +9,7 @@ contract('Airdrop', function(accounts) {
     before(function () {
         return AirDrop.deployed().then(function(instance) {
             airdropInstance = instance;
-            return SRTToken.deployed();
+            return InviteToken.deployed();
         }).then(function(token) {
             tokenInstance = token;
         });
