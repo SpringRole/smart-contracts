@@ -1,8 +1,8 @@
-var SRTToken = artifacts.require("./SRTToken.sol");
+var InviteToken = artifacts.require("./InviteToken.sol");
 
-contract('SRTToken', function(accounts) {
+contract('InviteToken', function(accounts) {
     it("should have decimal place of 18", function() {
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             return instance.decimals.call();
         }).then(function(decimals) {
             assert.equal(decimals.valueOf(), 18, "18 decimals not found");
@@ -10,7 +10,7 @@ contract('SRTToken', function(accounts) {
     });
 
     it("token should have a name", function() {
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             return instance.name.call();
         }).then(function(name) {
             assert.isDefined(name.valueOf(), 'token should have a name');
@@ -18,7 +18,7 @@ contract('SRTToken', function(accounts) {
     });
 
     it("token should have a symbol", function() {
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             return instance.symbol.call();
         }).then(function(symbol) {
             assert.isDefined(symbol.valueOf(), 'token should have a symbol');
@@ -26,7 +26,7 @@ contract('SRTToken', function(accounts) {
     });
 
     it("token should have a maxSupply", function() {
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             return instance.maxSupply.call();
         }).then(function(maxSupply) {
             assert.isDefined(maxSupply.valueOf(), 'token should have a maxSupply');
@@ -34,7 +34,7 @@ contract('SRTToken', function(accounts) {
     });
 
     it("mint should throw error when tried by non owner account", function() {
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             return instance.mint.call(10000,{from: accounts[1]});
         }).then(function(minted) {
             assert.isFalse(minted, "transaction should have thrown error");
@@ -44,7 +44,7 @@ contract('SRTToken', function(accounts) {
     });
 
     it("addWhiteListedContracts should throw error when tried by non owner account", function() {
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             return instance.addWhiteListedContracts.call(accounts[2],{from: accounts[1]});
         }).then(function(minted) {
             assert.isFalse(minted, "transaction should have thrown error");
@@ -56,7 +56,7 @@ contract('SRTToken', function(accounts) {
     it("mint should throw error when tried to mint more than max supply", function() {
         var token;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.maxSupply.call();
         }).then(function(maxSupply) {
@@ -74,7 +74,7 @@ contract('SRTToken', function(accounts) {
         var old_balance;
         var new_balance;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.balanceOf.call(accounts[0]);
         }).then(function(balance) {
@@ -102,7 +102,7 @@ contract('SRTToken', function(accounts) {
 
         var amount = 10;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.balanceOf.call(account_one);
         }).then(function(balance) {
@@ -137,7 +137,7 @@ contract('SRTToken', function(accounts) {
 
         var amount = 10;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.balanceOf.call(account_one);
         }).then(function(balance) {
@@ -168,7 +168,7 @@ contract('SRTToken', function(accounts) {
 
         var amount = 10;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.balanceOf.call(account_one);
         }).then(function(balance) {
@@ -199,7 +199,7 @@ contract('SRTToken', function(accounts) {
 
         var amount = 10;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.addWhiteListedContracts(account_three);
         }).then(function() {
@@ -227,7 +227,7 @@ contract('SRTToken', function(accounts) {
 
         var amount = 1;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.approve(accounts[2],amount,{from:accounts[1]});
         }).then(function() {
@@ -245,7 +245,7 @@ contract('SRTToken', function(accounts) {
         var approval_starting_balance;
         var approval_ending_balance;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.allowance.call(accounts[1],accounts[2]);
         }).then(function(balance) {
@@ -267,7 +267,7 @@ contract('SRTToken', function(accounts) {
         var approval_starting_balance;
         var approval_ending_balance;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.allowance.call(accounts[1],accounts[2]);
         }).then(function(balance) {
@@ -286,7 +286,7 @@ contract('SRTToken', function(accounts) {
 
         var amount = 1;
 
-        return SRTToken.deployed().then(function(instance) {
+        return InviteToken.deployed().then(function(instance) {
             token = instance;
             return token.approve(accounts[2],amount,{from:accounts[1]});
         }).then(function(status) {
