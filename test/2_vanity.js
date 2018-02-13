@@ -56,14 +56,14 @@ contract('VanityURL', function(accounts) {
             return tokenInstance.balanceOf.call(account_two);
         }).then(function(balance){
             account_two_starting_balance = balance.toNumber();
-            return vanityInstance.reserve('vinay035',{from:accounts[1]});
+            return vanityInstance.reserve('vinay_035',{from:accounts[1]});
         }).then(function(instance){
-            return vanityInstance.retrieveWalletForVanity.call('vinay035');
+            return vanityInstance.retrieveWalletForVanity.call('vinay_035');
         }).then(function(result) {
             assert.equal(result,accounts[1],"Should be able to retrive the same wallet address");
             return vanityInstance.retrieveVanityForWallet.call(accounts[1]);
         }).then(function(result) {
-            assert.equal(result,'vinay035',"Should be able to retrive the same vanity");
+            assert.equal(result,'vinay_035',"Should be able to retrive the same vanity");
         }).then(function() {
             return tokenInstance.balanceOf.call(account_one);
         }).then(function(balance) {
@@ -117,12 +117,12 @@ contract('VanityURL', function(accounts) {
 
     it("should be able to transfer a vanity", function() {
         return vanityInstance.transferOwnershipForVanityURL(accounts[3],{from:accounts[1]}).then(function(instance){
-            return vanityInstance.retrieveWalletForVanity.call('vinay035');
+            return vanityInstance.retrieveWalletForVanity.call('vinay_035');
         }).then(function(result) {
             assert.equal(result,accounts[3],"Should be able to retrive the same wallet address");
             return vanityInstance.retrieveVanityForWallet.call(accounts[3]);
         }).then(function(result) {
-            assert.equal(result,'vinay035',"Should be able to retrive the same vanity");
+            assert.equal(result,'vinay_035',"Should be able to retrive the same vanity");
         }).catch(function(error){
             assert.isUndefined(error,"should be able to reserve a url")
         })

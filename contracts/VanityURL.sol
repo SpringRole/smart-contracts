@@ -207,7 +207,7 @@ contract VanityURL is Ownable,Pausable {
     require(length >= 4 && length <= 200);
     for (uint i =0; i< length; i++){
       var c = bytes(_vanity_url)[i];
-      if (c < 48 ||  c > 122 || (c > 57 && c < 65) || (c > 90 && c < 97 ) )
+      if ((c < 48 ||  c > 122 || (c > 57 && c < 65) || (c > 90 && c < 97 )) && (c != 95))
         return false;
     }
     return true;
