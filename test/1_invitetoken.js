@@ -237,6 +237,59 @@ contract('InviteToken', function(accounts) {
         });
     });
 
+    it("should transfer 1 token correctly using 3rd approved address", function() {
+        var token;
+
+        var amount = 10;
+
+        var contract_owner = accounts[0];
+        var token_owner = accounts[3];
+        var spender = accounts[2];
+        var transfer_to = accounts[4];
+
+        var allowance_before_transfer;
+        var allowance_after_transfer;
+
+        var amount_transferred = 1;
+
+        var account_one_starting_balance;
+        var account_two_starting_balance;
+        var account_one_ending_balance;
+        var account_two_ending_balance;
+
+        return InviteToken.deployed().then(function(instance) {
+            token = instance;
+            return token.transfer(token_owner, amount, {from: contract_owner});
+        }).then(function() {
+            return token.balanceOf.call(token_owner);
+        }).then(function(balance) {
+            account_one_starting_balance = balance.toNumber();
+            return token.balanceOf.call(transfer_to);
+        }).then(function(balance) {
+            account_two_starting_balance = balance.toNumber();
+            return token.approve(spender,amount,{from:token_owner});
+        }).then(function() {
+            return token.allowance.call(token_owner,spender);
+        }).then(function(allowance) {
+            allowance_before_transfer = allowance.toNumber();
+            return token.transferFrom(token_owner,transfer_to,amount_transferred, {from: spender});
+        }).then(function() {
+            return token.allowance.call(token_owner,spender);
+        }).then(function(allowance) {
+            allowance_after_transfer = allowance.toNumber();
+            assert.equal(allowance_after_transfer, allowance_before_transfer - amount_transferred, "Allowance not updated correctly");
+        }).then(function() {
+            return token.balanceOf.call(token_owner);
+        }).then(function(balance) {
+            account_one_ending_balance = balance.toNumber();
+            return token.balanceOf.call(transfer_to);
+        }).then(function(balance) {
+            account_two_ending_balance = balance.toNumber();
+            assert.equal(account_one_ending_balance, account_one_starting_balance - amount_transferred, "Amount wasn't correctly taken from the sender");
+            assert.equal(account_two_ending_balance, account_two_starting_balance + amount_transferred, "Amount wasn't correctly sent to the receiver");
+        });
+    });
+
     it("should increase approval 1 token correctly", function() {
         var token;
 
