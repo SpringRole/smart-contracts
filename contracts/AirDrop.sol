@@ -68,11 +68,16 @@ contract AirDrop is Ownable {
     {
       /* calling transfer function from contract */
       tokenInstance.transfer(_address [i],_amount);
-      if(_address [i].balance == 0)
+      if((_address [i].balance == 0) && (this.balance >= _ethAmount))
       {
         require(_address [i].send(_ethAmount));
       }
     }
+  }
+
+
+  function transferEthToOnwer() onlyOwner public returns (bool) {
+    require(owner.send(this.balance));
   }
 
   /*
@@ -80,5 +85,13 @@ contract AirDrop is Ownable {
    */
   function() payable {
 
+  }
+
+  /*
+    function to kill contract
+  */
+
+  function kill() onlyOwner {
+    selfdestruct(owner);
   }
 }
