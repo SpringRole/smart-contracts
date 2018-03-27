@@ -12,6 +12,7 @@ contract('Airdrop', function(accounts) {
             return InviteToken.deployed();
         }).then(function(token) {
             tokenInstance = token;
+            airdropInstance.send(5*(10**18),{from:accounts[0]});
         });
     });
 
@@ -20,6 +21,10 @@ contract('Airdrop', function(accounts) {
             assert.isDefined(instance, "Token address should be defined");
             assert.equal(instance,tokenInstance.address ,"Token address should be same as SRPMT");
         });
+    });
+
+    it("should have balance 5 eth", function() {
+        assert.equal(5*(10**18),web3.eth.getBalance(airdropInstance.address).toNumber() ,"should have balance 5 eth");
     });
 
     it("airdrop should fail as no balance is assigned", function() {
@@ -58,7 +63,7 @@ contract('Airdrop', function(accounts) {
         }).then(function(balance){
             account_two_starting_balance = balance.toNumber();
             // do airdrop
-            return airdropInstance.doAirDrop(address,amount);
+            return airdropInstance.doAirDrop(address,amount,100);
         }).then(function(){
             // check balance for account 1
             return tokenInstance.balanceOf.call(account_one);
