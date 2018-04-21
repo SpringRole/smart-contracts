@@ -218,7 +218,7 @@ library SafeMath {
 
 
 /* Contract class to mint tokens and transfer */
-contract SpringToken is StandardToken {
+contract SPRINGToken is StandardToken {
   using SafeMath for uint256;
 
   string constant public name = 'SPRING Token';
@@ -228,7 +228,7 @@ contract SpringToken is StandardToken {
   uint256 public maxSupply;
 
   /* Contructor function to set maxSupply*/
-  function SpringToken(uint256 _maxSupply){
+  function SPRINGToken(uint256 _maxSupply){
     maxSupply = _maxSupply.mul(10**decimals);
   }
 
