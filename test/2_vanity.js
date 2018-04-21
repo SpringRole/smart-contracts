@@ -1,78 +1,22 @@
-var InviteToken = artifacts.require("./InviteToken.sol");
 var VanityURL = artifacts.require("./VanityURL.sol");
 
 contract('VanityURL', function(accounts) {
     var vanityInstance;
-    var tokenInstance;
 
     before(function () {
         return VanityURL.deployed().then(function(instance) {
             vanityInstance = instance;
-            return InviteToken.deployed();
-        }).then(function(token) {
-            tokenInstance = token;
-            // mint 1000 tokens
-            return tokenInstance.mint(1000);
-        }).then(function(minted) {
-            return tokenInstance.transfer(accounts[1],10);
-        }).then(function(transfer) {
-            // add vanity contract to whitelist
-            return tokenInstance.addWhiteListedContracts(vanityInstance.address);
-        }).then(function(result) {
-            assert.isDefined(result,"Vanity Contract should get added to whitelisted contracts")
-        }).catch(function(error){
-            assert.isUndefined(error,"Vanity Contract should get added to whitelisted contracts")
-        })
-    });
-
-    it("should have token defined", function() {
-        return vanityInstance.tokenAddress.call().then(function(instance){
-            assert.isDefined(instance, "Token address should be defined");
-            assert.equal(instance,tokenInstance.address ,"Token address should be same as SRPMT");
-        });
-    });
-
-    it("should have reservePricing defined", function() {
-        return vanityInstance.reservePricing.call().then(function(instance){
-            assert.isDefined(instance, "Token reservePricing should be defined");
         });
     });
 
     it("should be able to reserve a url", function() {
-
-        var amount = 1; //reserve fees
-        // Get initial balances of first and second account.
-        var account_one = accounts[1];
-        var account_two = accounts[2];
-
-        var account_one_starting_balance;
-        var account_two_starting_balance;
-        var account_one_ending_balance;
-        var account_two_ending_balance;
-
-        tokenInstance.balanceOf.call(account_one).then(function(balance){
-            account_one_starting_balance = balance.toNumber();
-            // check balance for account 2
-            return tokenInstance.balanceOf.call(account_two);
-        }).then(function(balance){
-            account_two_starting_balance = balance.toNumber();
-            return vanityInstance.reserve('vinay_035',{from:accounts[1]});
-        }).then(function(instance){
+        return vanityInstance.reserve('vinay_035',{from:accounts[1]}).then(function(instance){
             return vanityInstance.retrieveWalletForVanity.call('vinay_035');
         }).then(function(result) {
             assert.equal(result,accounts[1],"Should be able to retrive the same wallet address");
             return vanityInstance.retrieveVanityForWallet.call(accounts[1]);
         }).then(function(result) {
             assert.equal(result,'vinay_035',"Should be able to retrive the same vanity");
-        }).then(function() {
-            return tokenInstance.balanceOf.call(account_one);
-        }).then(function(balance) {
-            account_one_ending_balance = balance.toNumber();
-            return tokenInstance.balanceOf.call(account_two);
-        }).then(function(balance) {
-            account_two_ending_balance = balance.toNumber();
-            assert.equal(account_one_ending_balance, account_one_starting_balance - amount, "Amount wasn't correctly taken from the sender");
-            assert.equal(account_two_ending_balance, account_two_starting_balance + amount, "Amount wasn't correctly sent to tokenAddress");
         }).catch(function(error){
             assert.isUndefined(error,"should be able to reserve a url")
         })
