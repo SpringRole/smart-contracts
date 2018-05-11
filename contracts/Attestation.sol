@@ -62,6 +62,13 @@ contract Attestation {
         CompanyUsers[_company_address][msg.sender] = 1;
     }
 
+    function editCompany(bytes32 _data,address _company_address) companyExist(_company_address) onlyCompanyOwner(_company_address) {
+        CompanyDetails storage companyDetails = Company[_company_address];
+        companyDetails.active = true;
+        companyDetails.owner = msg.sender;
+        companyDetails.data = _data;
+    }
+
     function attestByUser(address _company_address, bytes32 _connection_type, Direction _direction, uint256 _start, uint256 _end) companyExist(_company_address){
         if(!Users[msg.sender].active)
         {
