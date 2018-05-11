@@ -104,23 +104,17 @@ contract Attestation {
         CompanyUsers[_company_address][_address] = 2;
     }
 
-    function fetchCompany(address _company_address) public returns (bool companyActive,address _owner,bytes32 _data) {
+    function fetchCompany(address _company_address) public returns (bool,address,bytes32) {
         CompanyDetails storage companyDetails = Company[_company_address];
         return (companyDetails.active,companyDetails.owner,companyDetails.data);
     }
 
-    function fetchUser(address _user_address) public returns (bool userActive,bytes32 _data) {
+    function fetchUser(address _user_address) public returns (bool,bytes32) {
         UserDetails storage userDetails = Users[_user_address];
         return (userDetails.active,userDetails.data);
     }
 
-    function fetchConnectionDetails(address _user_address, address _company_address, bytes32 _connectionType) public returns (
-            bool connectionActive,
-            bytes32 data,
-            Direction direction,
-            uint256 start,
-            uint256 end
-    ){
+    function fetchConnectionDetails(address _user_address, address _company_address, bytes32 _connectionType) public returns (bool,bytes32,Direction,uint256,uint256){
         UserDetails storage userDetails = Users[_user_address];
         Connection storage connection = userDetails.connections[_company_address][_connectionType];
         return (connection.active, connection.data, connection.direction, connection.start, connection.end);
