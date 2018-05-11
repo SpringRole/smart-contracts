@@ -19,6 +19,8 @@ contract Attestation {
     struct Connection {
         bool active;
         bytes32 data;
+        uint256 start;
+        uint256 end;
         Direction direction;
     }
 
@@ -60,28 +62,28 @@ contract Attestation {
         CompanyUsers[_company_address][msg.sender] = 1;
     }
 
-    function attestByUser(address _company_address, bytes32 _connection_type, Direction _direction) companyExist(_company_address){
+    function attestByUser(address _company_address, bytes32 _connection_type, Direction _direction, uint256 _start, uint256 _end) companyExist(_company_address){
         if(!Users[msg.sender].active)
         {
             createUser(msg.sender,bytes32(0));
         }
-        createConnection(msg.sender,_company_address,_connection_type,_direction);
+        upsertConnection(msg.sender,_company_address,_connection_type,_direction,_start,_end);
     }
 
-    function attestByCompany(address _user_address,address _company_address, bytes32 _connection_type, Direction _direction) companyExist(_company_address) onlyCompanyUser(_company_address) {
+    function attestByCompany(address _user_address,address _company_address, bytes32 _connection_type, Direction _direction, uint256 _start, uint256 _end) companyExist(_company_address) onlyCompanyUser(_company_address) {
         if(!Users[_user_address].active)
         {
             createUser(_user_address,bytes32(0));
         }
-        createConnection(_user_address,_company_address,_connection_type,_direction);
+        upsertConnection(_user_address,_company_address,_connection_type,_direction,_start,_end);
     }
 
-    function createConnection(address _user_address,address _company_address,bytes32 _connection_type, Direction _direction)
-    {
+    function upsertConnection(address _user_address,address _company_address,bytes32 _connection_type, Direction _direction, uint256 _start, uint256 _end) internal {
         UserDetails storage userDetails = Users[_user_address];
-        assert(!userDetails.connections[_company_address][_connection_type].active);
         Connection storage connection = userDetails.connections[_company_address][_connection_type];
         connection.active = true;
+        connection.start= _start;
+        connection.end= _end;
         connection.direction = _direction;
     }
 
