@@ -91,7 +91,7 @@ contract('VanityURL', function(accounts) {
     });
 
     it("owner only should be able to call reserveVanityURLByOwner", function() {
-        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner',{from:accounts[3]}).then(function(instance){
+        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner','0x',{from:accounts[3]}).then(function(instance){
             assert.isDefined(instance,"owner only should be able to call reserveVanityURLByOwner")
         }).catch(function(error){
             assert.isDefined(error,"owner only should be able to call reserveVanityURLByOwner")
@@ -99,7 +99,7 @@ contract('VanityURL', function(accounts) {
     });
 
     it("owner should be able to call reserveVanityURLByOwner and assign a vanity to any address", function() {
-        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner').then(function(instance){
+        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner','0x').then(function(instance){
             return vanityInstance.retrieveWalletForVanity.call('testowner');
         }).then(function(result) {
             assert.equal(result,accounts[4],"Should be able to retrive the same wallet address");
