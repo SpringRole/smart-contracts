@@ -5,12 +5,6 @@ pragma solidity ^0.4.19;
 * Go to beta.springrole.com to try this out!
 */
 
-contract Token{
-
-  function doTransfer(address _from, address _to, uint256 _value) public returns (bool);
-
-}
-
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
@@ -108,44 +102,19 @@ contract Pausable is Ownable {
 
 contract VanityURL is Ownable,Pausable {
 
-  // This declares a state variable that would store the contract address
-  Token public tokenAddress;
   // This declares a state variable that mapping for vanityURL to address
   mapping (string => address) vanity_address_mapping;
   // This declares a state variable that mapping for address to vanityURL
   mapping (address => string ) address_vanity_mapping;
-  // This declares a state variable that stores pricing
-  uint256 public reservePricing;
-  // This declares a state variable address to which token to be transfered
-  address public transferTokenTo;
-
   /*
     constructor function to set token address & Pricing for reserving and token transfer address
    */
-  function VanityURL(address _tokenAddress, uint256 _reservePricing, address _transferTokenTo){
-    tokenAddress = Token(_tokenAddress);
-    reservePricing = _reservePricing;
-    transferTokenTo = _transferTokenTo;
+  function VanityURL(){
   }
 
   event VanityReserved(address _to, string _vanity_url);
   event VanityTransfered(address _to,address _from, string _vanity_url);
   event VanityReleased(string _vanity_url);
-
-  /* function to update Token address */
-  function updateTokenAddress (address _tokenAddress) onlyOwner public {
-    tokenAddress = Token(_tokenAddress);
-  }
-
-  /* function to update transferTokenTo */
-  function updateTokenTransferAddress (address _transferTokenTo) onlyOwner public {
-    transferTokenTo = _transferTokenTo;
-  }
-
-  /* function to set reserve pricing */
-  function setReservePricing (uint256 _reservePricing) onlyOwner public {
-    reservePricing = _reservePricing;
-  }
 
   /* function to retrive wallet address from vanity url */
   function retrieveWalletForVanity(string _vanity_url) constant public returns (address) {
@@ -171,7 +140,6 @@ contract VanityURL is Ownable,Pausable {
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
     require(bytes(address_vanity_mapping[msg.sender]).length == 0);
-    require(tokenAddress.doTransfer(msg.sender,transferTokenTo,reservePricing));
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
     VanityReserved(msg.sender, _vanity_url);
