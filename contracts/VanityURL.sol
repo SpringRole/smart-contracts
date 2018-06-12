@@ -215,7 +215,7 @@ contract VanityURL is Ownable,Pausable {
   /*
   function to transfer ownership for Vanity URL by Owner
   */
-  function reserveVanityURLByOwner(address _to,string _vanity_url,bytes32 _data) whenNotPaused onlyOwner public {
+  function reserveVanityURLByOwner(address _to,string _vanity_url,string _data) whenNotPaused onlyOwner public {
       _vanity_url = _toLower(_vanity_url);
       require(checkForValidity(_vanity_url));
       /* check if vanity url is being used by anyone */
