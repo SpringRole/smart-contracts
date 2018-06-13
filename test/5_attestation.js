@@ -11,7 +11,7 @@ contract('Attestation', function(accounts) {
     });
 
     it("should write to blockchain", function() {
-        return attestationInstance.write('_entity1','_entity2','_data').then(function(instance){
+        return attestationInstance.write('_entity1','_entity2','_type','_data').then(function(instance){
             assert.isDefined(instance,"should be able to write to blockchain")
         }).catch(function(error){
             assert.isUndefined(error,"should be able to write to blockchain")
