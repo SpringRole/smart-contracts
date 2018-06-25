@@ -10,11 +10,17 @@ contract('VanityURL', function(accounts) {
     });
 
     it("should be able to reserve a url", function() {
-        return vanityInstance.reserve('vinay_035',{from:accounts[1]}).then(function(instance){
+        return vanityInstance.reserve('vinay_035','srind1',{from:accounts[1]}).then(function(instance){
             return vanityInstance.retrieveWalletForVanity.call('vinay_035');
         }).then(function(result) {
             assert.equal(result,accounts[1],"Should be able to retrive the same wallet address");
             return vanityInstance.retrieveVanityForWallet.call(accounts[1]);
+        }).then(function(result) {
+            assert.equal(result,'vinay_035',"Should be able to retrive the same vanity");
+            return vanityInstance.retrieveSpringroleIdForVanity.call('vinay_035');
+        }).then(function(result) {
+            assert.equal(result,'srind1',"Should be able to retrive the same springrole id");
+            return vanityInstance.retrieveVanityForSpringroleId.call('srind1');
         }).then(function(result) {
             assert.equal(result,'vinay_035',"Should be able to retrive the same vanity");
         }).catch(function(error){
@@ -23,13 +29,19 @@ contract('VanityURL', function(accounts) {
     });
 
     it("reserve url should be case insensitive", function() {
-        return vanityInstance.reserve('CASEIN').then(function(instance){
+        return vanityInstance.reserve('CASEIN','srind2').then(function(instance){
             return vanityInstance.retrieveWalletForVanity.call('casein');
         }).then(function(result) {
             assert.equal(result,accounts[0],"Should be able to retrive the same wallet address");
             return vanityInstance.retrieveVanityForWallet.call(accounts[0]);
         }).then(function(result) {
             assert.equal(result,'casein',"reserve url should be case insensitive");
+            return vanityInstance.retrieveSpringroleIdForVanity.call('casein');
+        }).then(function(result) {
+            assert.equal(result,'srind2',"Should be able to retrive the same springrole id");
+            return vanityInstance.retrieveVanityForSpringroleId.call('srind2');
+        }).then(function(result) {
+            assert.equal(result,'casein',"Should be able to retrive the same vanity");
         }).catch(function(error){
             assert.isUndefined(error,"should be able to reserve a url")
         })
@@ -85,13 +97,16 @@ contract('VanityURL', function(accounts) {
             return vanityInstance.retrieveWalletForVanity.call('casein');
         }).then(function(result){
             assert.equal(result,'0x0000000000000000000000000000000000000000',"owner should be able to release a vanity")
+            return vanityInstance.retrieveSpringroleIdForVanity.call('casein');
+        }).then(function(result){
+            assert.equal(result,'',"owner should be able to release a vanity")
         }).catch(function(error){
             assert.isUndefined(error,"owner should be able to release a vanity")
         })
     });
 
     it("owner only should be able to call reserveVanityURLByOwner", function() {
-        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner',{from:accounts[3]}).then(function(instance){
+        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner','srind3','0x',{from:accounts[3]}).then(function(instance){
             assert.isDefined(instance,"owner only should be able to call reserveVanityURLByOwner")
         }).catch(function(error){
             assert.isDefined(error,"owner only should be able to call reserveVanityURLByOwner")
@@ -99,7 +114,7 @@ contract('VanityURL', function(accounts) {
     });
 
     it("owner should be able to call reserveVanityURLByOwner and assign a vanity to any address", function() {
-        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner').then(function(instance){
+        return vanityInstance.reserveVanityURLByOwner(accounts[4],'testowner','srind3','0x').then(function(instance){
             return vanityInstance.retrieveWalletForVanity.call('testowner');
         }).then(function(result) {
             assert.equal(result,accounts[4],"Should be able to retrive the same wallet address");
@@ -120,7 +135,7 @@ contract('VanityURL', function(accounts) {
     });
 
     it("should error on change vanityURL when vanity is in use", function() {
-        return vanityInstance.changeVanityURL('vinay035',{from:accounts[3]}).then(function(instance){
+        return vanityInstance.changeVanityURL('vinay035','srind4',{from:accounts[3]}).then(function(instance){
             assert.isUndefined(instance,"should error on change vanityURL when not assigned")
         }).catch(function(error){
             assert.isDefined(error,"should error on change vanityURL when not assigned")
@@ -128,9 +143,10 @@ contract('VanityURL', function(accounts) {
     });
 
     it("should be able to change vanityURL", function() {
-        return vanityInstance.changeVanityURL('vinay0351',{from:accounts[3]}).then(function(instance){
+        return vanityInstance.changeVanityURL('vinay0351','srind5',{from:accounts[3]}).then(function(instance){
             assert.isDefined(instance,"should be able to change vanityURL")
         }).catch(function(error){
+            console.log(error);
             assert.isUndefined(error,"should be able to change vanityURL")
         })
     });

@@ -106,6 +106,10 @@ contract VanityURL is Ownable,Pausable {
   mapping (string => address) vanity_address_mapping;
   // This declares a state variable that mapping for address to vanityURL
   mapping (address => string ) address_vanity_mapping;
+  // This declares a state variable that mapping for vanityURL to Springrole ID
+  mapping (string => string) vanity_springrole_id_mapping;
+  // This declares a state variable that mapping for Springrole ID to vanityURL
+  mapping (string => string) springrole_id_vanity_mapping;
   /*
     constructor function to set token address & Pricing for reserving and token transfer address
    */
@@ -126,21 +130,38 @@ contract VanityURL is Ownable,Pausable {
     return address_vanity_mapping[_address];
   }
 
+  /* function to retrive wallet springrole id from vanity url */
+  function retrieveSpringroleIdForVanity(string _vanity_url) constant public returns (string) {
+    return vanity_springrole_id_mapping[_vanity_url];
+  }
+
+  /* function to retrive vanity url from address */
+  function retrieveVanityForSpringroleId(string _springrole_id) constant public returns (string) {
+    return springrole_id_vanity_mapping[_springrole_id];
+  }
+
   /*
     function to reserve vanityURL
     1. Checks if vanity is check is valid
     2. Checks if address has already a vanity url
     3. check if vanity url is used by any other or not
-    4. Check if vanity url is present in reserved keyword
+    4. Check if vanity url is present in any other spingrole id
     5. Transfer the token
     6. Update the mapping variables
   */
-  function reserve(string _vanity_url) whenNotPaused public {
+  function reserve(string _vanity_url,string _springrole_id) whenNotPaused public {
     _vanity_url = _toLower(_vanity_url);
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
     require(bytes(address_vanity_mapping[msg.sender]).length == 0);
+    require(bytes(springrole_id_vanity_mapping[_springrole_id]).length == 0);
+    /* adding to vanity address mapping */
     vanity_address_mapping[_vanity_url] = msg.sender;
+    /* adding to vanity springrole id mapping */
+    vanity_springrole_id_mapping[_vanity_url] = _springrole_id;
+    /* adding to springrole id vanity mapping */
+    springrole_id_vanity_mapping[_springrole_id] = _vanity_url;
+    /* adding to address vanity mapping */
     address_vanity_mapping[msg.sender] = _vanity_url;
     VanityReserved(msg.sender, _vanity_url);
   }
@@ -184,19 +205,25 @@ contract VanityURL is Ownable,Pausable {
   /*
   function to change Vanity URL
     1. Checks whether vanity URL is check is valid
-    2. Checks if address has already a vanity url
-    3. check if vanity url is used by any other or not
-    4. Check if vanity url is present in reserved keyword
-    5. Update the mapping variables
+    2. Checks whether springrole id has already has a vanity
+    3. Checks if address has already a vanity url
+    4. check if vanity url is used by any other or not
+    5. Check if vanity url is present in reserved keyword
+    6. Update the mapping variables
   */
 
-  function changeVanityURL(string _vanity_url) whenNotPaused public {
+  function changeVanityURL(string _vanity_url, string _springrole_id) whenNotPaused public {
     require(bytes(address_vanity_mapping[msg.sender]).length != 0);
+    require(bytes(springrole_id_vanity_mapping[_springrole_id]).length == 0);
     _vanity_url = _toLower(_vanity_url);
     require(checkForValidity(_vanity_url));
     require(vanity_address_mapping[_vanity_url]  == address(0x0));
+
     vanity_address_mapping[_vanity_url] = msg.sender;
     address_vanity_mapping[msg.sender] = _vanity_url;
+    vanity_springrole_id_mapping[_vanity_url]=_springrole_id;
+    springrole_id_vanity_mapping[_springrole_id]=_vanity_url;
+
     VanityReserved(msg.sender, _vanity_url);
   }
 
@@ -215,7 +242,7 @@ contract VanityURL is Ownable,Pausable {
   /*
   function to transfer ownership for Vanity URL by Owner
   */
-  function reserveVanityURLByOwner(address _to,string _vanity_url) whenNotPaused onlyOwner public {
+  function reserveVanityURLByOwner(address _to,string _vanity_url,string _springrole_id,string _data) whenNotPaused onlyOwner public {
       _vanity_url = _toLower(_vanity_url);
       require(checkForValidity(_vanity_url));
       /* check if vanity url is being used by anyone */
@@ -227,6 +254,10 @@ contract VanityURL is Ownable,Pausable {
         delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
         /* delete from vanity mapping */
         delete(vanity_address_mapping[_vanity_url]);
+        /* delete from springrole id vanity mapping */
+        delete(springrole_id_vanity_mapping[vanity_springrole_id_mapping[_vanity_url]]);
+        /* delete from vanity springrole id mapping */
+        delete(vanity_springrole_id_mapping[_vanity_url]);
       }
       else
       {
@@ -236,6 +267,8 @@ contract VanityURL is Ownable,Pausable {
       /* add new address to mapping */
       vanity_address_mapping[_vanity_url] = _to;
       address_vanity_mapping[_to] = _vanity_url;
+      springrole_id_vanity_mapping[_springrole_id] = _vanity_url;
+      vanity_springrole_id_mapping[_vanity_url] = _springrole_id;
   }
 
   /*
@@ -247,6 +280,10 @@ contract VanityURL is Ownable,Pausable {
     delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
     /* delete from vanity mapping */
     delete(vanity_address_mapping[_vanity_url]);
+    /* delete from springrole id vanity mapping */
+    delete(springrole_id_vanity_mapping[vanity_springrole_id_mapping[_vanity_url]]);
+    /* delete from vanity springrole id mapping */
+    delete(vanity_springrole_id_mapping[_vanity_url]);
     /* sending VanityReleased event */
     VanityReleased(_vanity_url);
   }
