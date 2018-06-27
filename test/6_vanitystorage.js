@@ -5,7 +5,7 @@ contract("VanityStorage",function(accounts){
     var vanityURLInstance;
         before(function(){
             VanityURL_Upgrade.deployed().then(function(instance){
-                console.log(instance.address);
+               // console.log(instance.address);
                 vanityInstance=instance;
                 return VanityStorage.deployed();
             }).then(function(instance2){
@@ -14,11 +14,11 @@ contract("VanityStorage",function(accounts){
         })
         it("should give access to the VanityURL contract",function(){
             return vanityStorageInstance.allowAccess(vanityInstance.address,{from:accounts[0]}).then(function(ins){
-                console.log(ins);
+                //console.log(ins);
                 return vanityInstance.reserve('vinay_035','srind1',{from:accounts[1]}).then(function(instance){
                     return vanityInstance.retrieveWallet.call('vinay_035');
                 }).then(function(result) {
-                    console.log(result==accounts[1]);
+                  //  console.log(result==accounts[1]);
                     assert.equal(result,accounts[1],"Should be able to retrive the same wallet address");
                     return vanityInstance.retrieveSpringId.call("vinay_035");
                 }).then(res=>{
@@ -122,10 +122,10 @@ contract("VanityStorage",function(accounts){
         });
         it("owner should be able to kill the contract",function(){
             return vanityInstance.kill({from:accounts[6]}).then(function(instance){
-                console.log(instance);
+               // console.log(instance);
                     assert.isUndefined(instance,"owner should be able to kill the contract");
             }).catch(error=>{
-                console.log(error);
+               // console.log(error);
                 assert.isDefined(error,"owner should be able to kill the contract")
             });
         })
