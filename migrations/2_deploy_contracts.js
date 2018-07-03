@@ -4,6 +4,7 @@ var AirDrop = artifacts.require("./AirDrop.sol");
 var SpringToken = artifacts.require("./SPRINGToken.sol");
 var Attestation = artifacts.require("./Attestation.sol");
 var VanityStorage = artifacts.require("./VanityStorage.sol");
+var TokenStorage=artifacts.require("./TokenStorage.sol");
 module.exports = function(deployer,network,accounts) {
     deployer.deploy(InviteToken,1000000).then(function() {
         return deployer.deploy(AirDrop, InviteToken.address);
@@ -15,5 +16,7 @@ module.exports = function(deployer,network,accounts) {
         return deployer.deploy(SpringToken,1000000);
     }).then(function(){
         return deployer.deploy(VanityStorage);
+    }).then(function(){
+        return deployer.deploy(TokenStorage);
     });
 };

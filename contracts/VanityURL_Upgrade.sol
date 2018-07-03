@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 import "./VanityStorage.sol";
 /* The upgradable version of vanityURL contract*/
 
@@ -42,7 +42,7 @@ contract Ownable {
    */
   function transferOwnership(address newOwner) onlyOwner public {
     require(newOwner != address(0));
-    OwnershipTransferred(owner, newOwner);
+    emit OwnershipTransferred(owner, newOwner);
     owner = newOwner;
   }
 }
@@ -79,7 +79,7 @@ contract Pausable is Ownable {
    */
   function pause() onlyOwner whenNotPaused public {
     paused = true;
-    Pause();
+    emit Pause();
   }
 
   /**
@@ -87,7 +87,7 @@ contract Pausable is Ownable {
    */
   function unpause() onlyOwner whenPaused public {
     paused = false;
-    Unpause();
+    emit Unpause();
   }
 }
 /**
@@ -131,7 +131,7 @@ contract VanityURL_Upgrade is Ownable,Pausable {
     vanityStorageaddr.setVanityForSpringroleId(_springrole_id,_vanity_url);
     /* adding to address vanity mapping */
     vanityStorageaddr.setVanityForWallet(msg.sender,_vanity_url);
-    VanityReserved(msg.sender, _vanity_url);
+    emit VanityReserved(msg.sender, _vanity_url);
   }
     /*
   function to make lowercase
@@ -188,7 +188,7 @@ contract VanityURL_Upgrade is Ownable,Pausable {
     vanityStorageaddr.setVanityForWallet(_to,string(vanityStorageaddr.retrieveVanityForWallet(msg.sender)));
     vanityStorageaddr.setWalletForVanity(_to,string(vanityStorageaddr.retrieveVanityForWallet(msg.sender)));
     //vanity_address_mapping[address_vanity_mapping[msg.sender]] = _to;
-    VanityTransfered(msg.sender,_to,string(vanityStorageaddr.retrieveVanityForWallet(_to)));
+    emit VanityTransfered(msg.sender,_to,string(vanityStorageaddr.retrieveVanityForWallet(_to)));
     vanityStorageaddr.deleteWalletVanityMapping(msg.sender);
   }
   /*
@@ -205,7 +205,7 @@ contract VanityURL_Upgrade is Ownable,Pausable {
     /* delete from vanity springrole id mapping */
     vanityStorageaddr.deleteVanitySpringMapping(_vanity_url);
     /* sending VanityReleased event */
-    VanityReleased(_vanity_url);
+    emit VanityReleased(_vanity_url);
   }
   /*
   function to transfer ownership for Vanity URL by Owner (Upgraded function)
@@ -217,7 +217,7 @@ contract VanityURL_Upgrade is Ownable,Pausable {
       if(vanityStorageaddr.retrieveWalletForVanity(_vanity_url)  != address(0x0))
       {
         /* Sending Vanity Transfered Event */
-        VanityTransfered(vanityStorageaddr.retrieveWalletForVanity(_vanity_url),_to,_vanity_url);
+        emit VanityTransfered(vanityStorageaddr.retrieveWalletForVanity(_vanity_url),_to,_vanity_url);
         /* delete from address mapping */
         vanityStorageaddr.deleteWalletVanityMapping(vanityStorageaddr.retrieveWalletForVanity(_vanity_url));
         /* delete from vanity mapping */
@@ -230,7 +230,7 @@ contract VanityURL_Upgrade is Ownable,Pausable {
       else
       {
         /* sending VanityReserved event */
-        VanityReserved(_to, _vanity_url);
+        emit VanityReserved(_to, _vanity_url);
       }
       /* add new address to mapping */
       vanityStorageaddr.setWalletForVanity(_to,_vanity_url);
@@ -258,7 +258,7 @@ contract VanityURL_Upgrade is Ownable,Pausable {
     vanityStorageaddr.setVanityForWallet(msg.sender,_vanity_url);
     vanityStorageaddr.setSpringroleIdForVanity(_vanity_url,_springrole_id);
     vanityStorageaddr.setVanityForSpringroleId(_springrole_id,_vanity_url);
-    VanityReserved(msg.sender, _vanity_url);
+    emit VanityReserved(msg.sender, _vanity_url);
   }
    /*
     function to kill contract

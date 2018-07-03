@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
-
-
+import "./TokenStorage.sol";
+/*The upgraded contract*/
 /**
  * @title ERC20Basic
  * @dev Simpler version of ERC20 interface
@@ -89,7 +89,7 @@ contract Pausable is Ownable {
    */
   function pause() onlyOwner whenNotPaused public {
     paused = true;
-    emit Pause();
+    Pause();
   }
 
   /**
@@ -97,25 +97,25 @@ contract Pausable is Ownable {
    */
   function unpause() onlyOwner whenPaused public {
     paused = false;
-    emit Unpause();
+    Unpause();
   }
 }
-
 contract StandardToken is ERC20,Pausable {
     using SafeMath for uint256;
-
-    mapping (address => uint256) public balances;
-    mapping (address => mapping (address => uint256)) public allowed;
-
+   TokenStorage public Tstore;
+   //constructor
+   function StandardToken(address Tstore_address) {
+      Tstore=TokenStorage(Tstore_address);
+   }
     /**
     * @dev transfer token for a specified address
     * @param _to The address to transfer to.
     * @param _value The amount to be transferred.
     */
     function transfer(address _to, uint256 _value) whenNotPaused returns (bool success) {
-        require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
-        balances[msg.sender] = balances[msg.sender].sub(_value);
-        balances[_to] = balances[_to].add(_value);
+        require(Tstore.getBalanceFromAddress(msg.sender)>=_value&&Tstore.getBalanceFromAddress(_to)+_value>Tstore.getBalanceFromAddress(_to));
+        Tstore.setBalance(msg.sender,Tstore.getBalanceFromAddress(msg.sender).sub(_value));
+        Tstore.setBalance(_to,Tstore.getBalanceFromAddress(_to).add(_value));
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -127,10 +127,10 @@ contract StandardToken is ERC20,Pausable {
     * @param _value uint256 the amout of tokens to be transfered
     */
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused returns (bool success) {
-        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]);
-        balances[_to] = balances[_to].add(_value);
-        balances[_from] = balances[_from].sub(_value);
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+        require(Tstore.getBalanceFromAddress(_from)>=_value && Tstore.getAmountFromAddress(_from,msg.sender)>=_value && Tstore.getBalanceFromAddress(_from)+_value>Tstore.getBalanceFromAddress(_from));
+        Tstore.setBalance(_to,Tstore.getBalanceFromAddress(_to).add(_value));
+        Tstore.setBalance(_from,Tstore.getBalanceFromAddress(_from).sub(_value));
+        Tstore.setAllowedAmount(_from,msg.sender,Tstore.getAmountFromAddress(_from,msg.sender).sub(_value));
         emit Transfer(_from, _to, _value);
         return true;
     }
@@ -141,7 +141,7 @@ contract StandardToken is ERC20,Pausable {
     * @return An uint256 representing the amount owned by the passed address.
     */
     function balanceOf(address _owner) constant returns (uint256 balance) {
-        return balances[_owner];
+        return Tstore.getBalanceFromAddress(_owner);
     }
 
     /**
@@ -152,9 +152,8 @@ contract StandardToken is ERC20,Pausable {
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) whenNotPaused returns (bool success) {
-        require(allowed[msg.sender][_spender] == 0);
-        allowed[msg.sender][_spender] = _value;
-        emit Approval(msg.sender, _spender, _value);
+        require(Tstore.getAmountFromAddress(msg.sender,_spender)==0);
+        Tstore.setAllowedAmount(msg.sender,_spender,_value);
         return true;
     }
 
@@ -165,7 +164,7 @@ contract StandardToken is ERC20,Pausable {
     * @return A uint256 specifing the amount of tokens still available for the spender.
     */
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
-      return allowed[_owner][_spender];
+      return Tstore.getAmountFromAddress(_owner,_spender);
     }
 
     /**
@@ -173,23 +172,22 @@ contract StandardToken is ERC20,Pausable {
      * From MonolithDAO Token.sol
      */
     function increaseApproval(address _spender, uint _addedValue) whenNotPaused public returns (bool) {
-        allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
-        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        Tstore.setAllowedAmount(msg.sender,_spender,Tstore.getAmountFromAddress(msg.sender,_spender).add(_addedValue));
+        emit Approval(msg.sender, _spender,Tstore.getAmountFromAddress(msg.sender,_spender));
         return true;
     }
 
     function decreaseApproval(address _spender, uint _subtractedValue) whenNotPaused public returns (bool) {
-        uint oldValue = allowed[msg.sender][_spender];
+        uint oldValue = Tstore.getAmountFromAddress(msg.sender,_spender);
         if (_subtractedValue > oldValue) {
-            allowed[msg.sender][_spender] = 0;
+            Tstore.setAllowedAmount(msg.sender,_spender,0);
         } else {
-            allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
+            Tstore.setAllowedAmount(msg.sender,_spender,oldValue.sub(_subtractedValue));
         }
-        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+        emit Approval(msg.sender, _spender,Tstore.getAmountFromAddress(msg.sender,_spender));
         return true;
     }
 }
-
 library SafeMath {
   function mul(uint256 a, uint256 b) internal constant returns (uint256) {
     uint256 c = a * b;
@@ -215,10 +213,8 @@ library SafeMath {
     return c;
   }
 }
-
-
 /* Contract class to mint tokens and transfer */
-contract SPRINGToken is StandardToken {
+contract SPRINGToken_Upgrade is StandardToken {
   using SafeMath for uint256;
 
   string constant public name = 'SPRING Token';
@@ -228,7 +224,7 @@ contract SPRINGToken is StandardToken {
   uint256 public maxSupply;
 
   /* Contructor function to set maxSupply*/
-  function SPRINGToken(uint256 _maxSupply){
+  function SPRINGToken_Upgrade(uint256 _maxSupply,address Tstore_address) StandardToken(Tstore_address) {
     maxSupply = _maxSupply.mul(10**decimals);
   }
 
@@ -240,7 +236,7 @@ contract SPRINGToken is StandardToken {
   function mint(uint256 _amount) onlyOwner public returns (bool) {
     require (maxSupply >= (totalSupply.add(_amount)));
     totalSupply = totalSupply.add(_amount);
-    balances[msg.sender] = balances[msg.sender].add(_amount);
+    Tstore.setBalance(msg.sender,Tstore.getBalanceFromAddress(msg.sender).add(_amount));
     emit Transfer(address(0), msg.sender, _amount);
     return true;
   }
