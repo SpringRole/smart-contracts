@@ -2,9 +2,11 @@
 
 var VanityStorage = artifacts.require("./TokenStorage.sol");
 var VanityURL_Upgrade=artifacts.require("./SPRINGToken_Upgrade.sol");
-contract("Spring token upgrade",function(accounts){
+var TokenVesting=artifacts.require("./TokenVesting.sol");
+contract("Spring token upgrade with token vesting",function(accounts){
     var vanityInstance;
     var vanityURLInstance;
+    var TokenVestingInstance;
         before(function(){
             VanityURL_Upgrade.deployed().then(function(instance){
                // console.log(instance.address);
@@ -12,7 +14,11 @@ contract("Spring token upgrade",function(accounts){
                 return VanityStorage.deployed();
             }).then(function(instance2){
                 vanityStorageInstance=instance2;
-            })
+                return TokenVesting.deployed();
+            }).then(function(instance3){
+                console.log(instance3.address);
+                TokenVestingInstance=instance3
+            });
         })
         it("should give access to the VanityURL contract",function(){
             return vanityStorageInstance.allowAccess(vanityInstance.address,{from:accounts[0]}).then(function(ins){
@@ -302,7 +308,110 @@ contract("Spring token upgrade",function(accounts){
                 assert.isDefined(err, "transaction should have thrown error");
             });
         });
+         //testing for TokenVesting
+         it("should tranfer the passed amount to the vesting contract from the owner account",function(){
+            var token;
+            return VanityURL_Upgrade.deployed().then(function(instance){
+                token=instance;
+                //console.log(TokenVestingInstance.address);
+                return token.transfer(TokenVestingInstance.address,100,{from:accounts[0]});
+                }).then((success)=>{
+                    return token.balanceOf.call(TokenVestingInstance.address);
+                }).then((balance)=>{
+                assert.equal(100,balance.toNumber(),"should be equal");
+                }).catch(err=>{
+                    console.log(err);
+                    assert.isUndefined(err,"No error");
+                })
+            });
+        it("should be able add an beneficiary and the details and retrieve the details",function(){
+            var token;
+            return TokenVesting.deployed().then((instance)=>{
+                token=instance;
+                return token.SetVesting(accounts[8],1450656000,31536000,126144000,4,true,{from:accounts[0]});
+            }).then(set=>{
+                return token.VestingSchedule.call(accounts[8])
+            }).then(res=>{
+               // console.log(res[0]);
+                assert.equal(1450656000,res[1].toNumber(),"starting time is equal are equal");
+            }).catch(err=>{
+                console.log(err);
+                assert.isUndefined(err,"no error");
+            });
+        });
+        it("beneficiary should be able to release his balance",function(){
+            var token;
+            return TokenVesting.deployed().then((instance)=>{
+                token=instance
+                return token.release({from:accounts[8]})
+            }).then((event)=>{
+               // console.log(event);
+                return vanityInstance.balanceOf.call(accounts[8])
+            }).then(bal=>{
+              //  console.log(bal.toNumber());
+                assert.equal(4,bal.toNumber(),"the balance should be equal")
+            }).catch(err=>{
 
+            })
+        });
+        it("should give an error a user tries to release more token than his vested amount",function(){
+            var token;
+            return TokenVesting.deployed().then((instance)=>{
+                token=instance
+                return token.release({from:accounts[8]})
+            }).then((event)=>{
+               // console.log(event);
+                assert.isUndefined(event,"throws an error");
+            }).catch(err=>{
+                assert.isDefined(err,"throws an error");
+            })
+        });
+
+        it("throws an error when the beneficiary tries to withdraw before cliff",function(){
+            var token;
+            return TokenVesting.deployed().then((instance)=>{
+                token=instance;
+                //start date is 12th may 2018 cliff 1 year and vesting 4 yrs
+                return token.SetVesting(accounts[9],1526127132,31536000,126144000,1,true,{from:accounts[0]});
+            }).then(set=>{
+                return token.VestingSchedule.call(accounts[9])
+            }).then(res=>{
+               // console.log(res);
+                 return token.release({from:accounts[9]})
+            }).then((ans)=>{
+                assert.isUndefined(ans,"throws an error")
+            }).catch(err=>{
+                assert.isDefined(err,"throws an error");
+            });
+        });
+        it("vested amount should eb 0 before cliff",function(){
+            var token;
+            return TokenVesting.deployed().then((instance)=>{
+                token=instance;
+                //start date is 12th may 2018 cliff 1 year and vesting 4 yrs
+                return token.vestedAmount.call(accounts[9]);
+            }).then((ans)=>{
+                assert.equal(ans,0,"equal");
+            }).catch(err=>{
+                assert.isUndefined(err,"no error");
+            });
+        });
+        
+        it("owner should be able to revoke vesting",function(){
+            var token;
+            return TokenVesting.deployed().then((instance)=>{
+                token=instance;
+                return token.revokeVesting(accounts[9],{from:accounts[0]});
+            }).then((ans)=>{
+                return vanityInstance.balanceOf.call(accounts[9])
+            }).then((bal)=>{
+                //console.log(bal);
+                assert.equal(bal,1,"they are equal");
+            }).catch(err=>{
+                console.log(err);
+                assert.isUndefined(err,"they are equal");
+            });
+        });
         it("should be able to change paused status", function() {
             return VanityURL_Upgrade.deployed().then(function(instance) {
                 token = instance;

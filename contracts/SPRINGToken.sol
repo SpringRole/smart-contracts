@@ -51,7 +51,7 @@ contract Ownable {
    */
   function transferOwnership(address newOwner) onlyOwner public {
     require(newOwner != address(0));
-    emit OwnershipTransferred(owner, newOwner);
+     OwnershipTransferred(owner, newOwner);
     owner = newOwner;
   }
 
@@ -89,7 +89,7 @@ contract Pausable is Ownable {
    */
   function pause() onlyOwner whenNotPaused public {
     paused = true;
-    emit Pause();
+     Pause();
   }
 
   /**
@@ -97,16 +97,14 @@ contract Pausable is Ownable {
    */
   function unpause() onlyOwner whenPaused public {
     paused = false;
-    emit Unpause();
+     Unpause();
   }
 }
 
 contract StandardToken is ERC20,Pausable {
     using SafeMath for uint256;
-
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
-
     /**
     * @dev transfer token for a specified address
     * @param _to The address to transfer to.
@@ -116,10 +114,9 @@ contract StandardToken is ERC20,Pausable {
         require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        emit Transfer(msg.sender, _to, _value);
+        Transfer(msg.sender, _to, _value);
         return true;
     }
-
     /**
     * @dev Transfer tokens from one address to another
     * @param _from address The address which you want to send tokens from
@@ -131,7 +128,7 @@ contract StandardToken is ERC20,Pausable {
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
-        emit Transfer(_from, _to, _value);
+         Transfer(_from, _to, _value);
         return true;
     }
 
@@ -154,7 +151,7 @@ contract StandardToken is ERC20,Pausable {
     function approve(address _spender, uint256 _value) whenNotPaused returns (bool success) {
         require(allowed[msg.sender][_spender] == 0);
         allowed[msg.sender][_spender] = _value;
-        emit Approval(msg.sender, _spender, _value);
+         Approval(msg.sender, _spender, _value);
         return true;
     }
 
@@ -174,7 +171,7 @@ contract StandardToken is ERC20,Pausable {
      */
     function increaseApproval(address _spender, uint _addedValue) whenNotPaused public returns (bool) {
         allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
-        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
     }
 
@@ -185,7 +182,7 @@ contract StandardToken is ERC20,Pausable {
         } else {
             allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
         }
-        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+         Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
         return true;
     }
 }
@@ -228,7 +225,7 @@ contract SPRINGToken is StandardToken {
   uint256 public maxSupply;
 
   /* Contructor function to set maxSupply*/
-  function SPRINGToken(uint256 _maxSupply){
+  function SPRINGToken(uint256 _maxSupply) {
     maxSupply = _maxSupply.mul(10**decimals);
   }
 
@@ -241,7 +238,7 @@ contract SPRINGToken is StandardToken {
     require (maxSupply >= (totalSupply.add(_amount)));
     totalSupply = totalSupply.add(_amount);
     balances[msg.sender] = balances[msg.sender].add(_amount);
-    emit Transfer(address(0), msg.sender, _amount);
+    Transfer(address(0), msg.sender, _amount);
     return true;
   }
 
