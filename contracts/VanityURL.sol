@@ -37,11 +37,11 @@ contract Ownable {
 
   /**
    * @dev Allows the current owner to transfer control of the contract to a newOwner.
-   * @param newOwner The address to transfer ownership to.
+   * newOwner The address to transfer ownership to.
    */
   function transferOwnership(address newOwner) onlyOwner public {
     require(newOwner != address(0));
-    OwnershipTransferred(owner, newOwner);
+    emit OwnershipTransferred(owner, newOwner);
     owner = newOwner;
   }
 
@@ -80,7 +80,7 @@ contract Pausable is Ownable {
    */
   function pause() onlyOwner whenNotPaused public {
     paused = true;
-    Pause();
+    emit Pause();
   }
 
   /**
@@ -88,7 +88,7 @@ contract Pausable is Ownable {
    */
   function unpause() onlyOwner whenPaused public {
     paused = false;
-    Unpause();
+    emit Unpause();
   }
 }
 
@@ -163,7 +163,7 @@ contract VanityURL is Ownable,Pausable {
     springrole_id_vanity_mapping[_springrole_id] = _vanity_url;
     /* adding to address vanity mapping */
     address_vanity_mapping[msg.sender] = _vanity_url;
-    VanityReserved(msg.sender, _vanity_url);
+    emit VanityReserved(msg.sender, _vanity_url);
   }
 
   /*
@@ -224,7 +224,7 @@ contract VanityURL is Ownable,Pausable {
     vanity_springrole_id_mapping[_vanity_url]=_springrole_id;
     springrole_id_vanity_mapping[_springrole_id]=_vanity_url;
 
-    VanityReserved(msg.sender, _vanity_url);
+    emit VanityReserved(msg.sender, _vanity_url);
   }
 
   /*
@@ -235,7 +235,7 @@ contract VanityURL is Ownable,Pausable {
     require(bytes(address_vanity_mapping[msg.sender]).length != 0);
     address_vanity_mapping[_to] = address_vanity_mapping[msg.sender];
     vanity_address_mapping[address_vanity_mapping[msg.sender]] = _to;
-    VanityTransfered(msg.sender,_to,address_vanity_mapping[msg.sender]);
+    emit VanityTransfered(msg.sender,_to,address_vanity_mapping[msg.sender]);
     delete(address_vanity_mapping[msg.sender]);
   }
 
@@ -249,7 +249,7 @@ contract VanityURL is Ownable,Pausable {
       if(vanity_address_mapping[_vanity_url]  != address(0x0))
       {
         /* Sending Vanity Transfered Event */
-        VanityTransfered(vanity_address_mapping[_vanity_url],_to,_vanity_url);
+        emit VanityTransfered(vanity_address_mapping[_vanity_url],_to,_vanity_url);
         /* delete from address mapping */
         delete(address_vanity_mapping[vanity_address_mapping[_vanity_url]]);
         /* delete from vanity mapping */
@@ -262,7 +262,7 @@ contract VanityURL is Ownable,Pausable {
       else
       {
         /* sending VanityReserved event */
-        VanityReserved(_to, _vanity_url);
+        emit VanityReserved(_to, _vanity_url);
       }
       /* add new address to mapping */
       vanity_address_mapping[_vanity_url] = _to;
@@ -285,7 +285,7 @@ contract VanityURL is Ownable,Pausable {
     /* delete from vanity springrole id mapping */
     delete(vanity_springrole_id_mapping[_vanity_url]);
     /* sending VanityReleased event */
-    VanityReleased(_vanity_url);
+    emit VanityReleased(_vanity_url);
   }
 
   /*
