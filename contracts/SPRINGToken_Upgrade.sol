@@ -20,42 +20,7 @@ contract ERC20 is ERC20Basic {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-contract Ownable {
-  address public owner;
 
-
-  event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-
-  /**
-   * @dev The Ownable constructor sets the original `owner` of the contract to the sender
-   * account.
-   */
-  function Ownable() {
-    owner = msg.sender;
-  }
-
-
-  /**
-   * @dev Throws if called by any account other than the owner.
-   */
-  modifier onlyOwner() {
-    require(msg.sender == owner);
-    _;
-  }
-
-
-  /**
-   * @dev Allows the current owner to transfer control of the contract to a newOwner.
-   * @param newOwner The address to transfer ownership to.
-   */
-  function transferOwnership(address newOwner) onlyOwner public {
-    require(newOwner != address(0));
-    OwnershipTransferred(owner, newOwner);
-    owner = newOwner;
-  }
-
-}
 
 /**
  * @title Pausable
@@ -127,10 +92,10 @@ contract StandardToken is ERC20,Pausable {
     * @param _value uint256 the amout of tokens to be transfered
     */
     function transferFrom(address _from, address _to, uint256 _value) whenNotPaused returns (bool success) {
-        require(Tstore.getBalanceFromAddress(_from)>=_value && Tstore.getAmountFromAddress(_from,msg.sender)>=_value && Tstore.getBalanceFromAddress(_from)+_value>Tstore.getBalanceFromAddress(_from));
+        require(Tstore.getBalanceFromAddress(_from)>=_value && Tstore.getAllowedAmount(_from,msg.sender)>=_value && Tstore.getBalanceFromAddress(_from)+_value>Tstore.getBalanceFromAddress(_from));
         Tstore.setBalance(_to,Tstore.getBalanceFromAddress(_to).add(_value));
         Tstore.setBalance(_from,Tstore.getBalanceFromAddress(_from).sub(_value));
-        Tstore.setAllowedAmount(_from,msg.sender,Tstore.getAmountFromAddress(_from,msg.sender).sub(_value));
+        Tstore.setAllowedAmount(_from,msg.sender,Tstore.getAllowedAmount(_from,msg.sender).sub(_value));
         emit Transfer(_from, _to, _value);
         return true;
     }
@@ -152,7 +117,7 @@ contract StandardToken is ERC20,Pausable {
     * @param _value The amount of tokens to be spent.
     */
     function approve(address _spender, uint256 _value) whenNotPaused returns (bool success) {
-        require(Tstore.getAmountFromAddress(msg.sender,_spender)==0);
+        require(Tstore.getAllowedAmount(msg.sender,_spender)==0);
         Tstore.setAllowedAmount(msg.sender,_spender,_value);
         return true;
     }
@@ -164,7 +129,7 @@ contract StandardToken is ERC20,Pausable {
     * @return A uint256 specifing the amount of tokens still available for the spender.
     */
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
-      return Tstore.getAmountFromAddress(_owner,_spender);
+      return Tstore.getAllowedAmount(_owner,_spender);
     }
 
     /**
@@ -172,19 +137,19 @@ contract StandardToken is ERC20,Pausable {
      * From MonolithDAO Token.sol
      */
     function increaseApproval(address _spender, uint _addedValue) whenNotPaused public returns (bool) {
-        Tstore.setAllowedAmount(msg.sender,_spender,Tstore.getAmountFromAddress(msg.sender,_spender).add(_addedValue));
-        emit Approval(msg.sender, _spender,Tstore.getAmountFromAddress(msg.sender,_spender));
+        Tstore.setAllowedAmount(msg.sender,_spender,Tstore.getAllowedAmount(msg.sender,_spender).add(_addedValue));
+        emit Approval(msg.sender, _spender,Tstore.getAllowedAmount(msg.sender,_spender));
         return true;
     }
 
     function decreaseApproval(address _spender, uint _subtractedValue) whenNotPaused public returns (bool) {
-        uint oldValue = Tstore.getAmountFromAddress(msg.sender,_spender);
+        uint oldValue = Tstore.getAllowedAmount(msg.sender,_spender);
         if (_subtractedValue > oldValue) {
             Tstore.setAllowedAmount(msg.sender,_spender,0);
         } else {
             Tstore.setAllowedAmount(msg.sender,_spender,oldValue.sub(_subtractedValue));
         }
-        emit Approval(msg.sender, _spender,Tstore.getAmountFromAddress(msg.sender,_spender));
+        emit Approval(msg.sender, _spender,Tstore.getAllowedAmount(msg.sender,_spender));
         return true;
     }
 }

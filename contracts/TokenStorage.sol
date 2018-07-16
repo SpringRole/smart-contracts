@@ -1,22 +1,41 @@
 pragma solidity ^0.4.19;
-contract Ownable2 {
+contract Ownable {
   address public owner;
+
+
+  event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+
   /**
    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
    * account.
    */
-  function Ownable2() {
+  function Ownable() {
     owner = msg.sender;
   }
-   /**
+
+
+  /**
    * @dev Throws if called by any account other than the owner.
    */
-  modifier onlyOwner2() {
+  modifier onlyOwner() {
     require(msg.sender == owner);
     _;
   }
+
+
+  /**
+   * @dev Allows the current owner to transfer control of the contract to a newOwner.
+   * @param newOwner The address to transfer ownership to.
+   */
+  function transferOwnership(address newOwner) onlyOwner public {
+    require(newOwner != address(0));
+    OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+  }
+
 }
-contract TokenStorage is Ownable2 {
+contract TokenStorage is Ownable {
     //to keep track of balances
     mapping (address => uint256) public balances;
     //to keep track of allowed addresses
@@ -29,7 +48,7 @@ contract TokenStorage is Ownable2 {
         _;
     }
     //to set the contract address
-   function allowAccess(address newAddr) onlyOwner2 public {
+   function allowAccess(address newAddr) onlyOwner public {
      Access_allowed[newAddr]=true;
    }
     //function to get balance from address
@@ -37,7 +56,7 @@ contract TokenStorage is Ownable2 {
         return balances[_add];
     }
     //function to get amount from addresses
-    function getAmountFromAddress(address _add1,address _add2) constant public returns(uint256) {
+    function getAllowedAmount(address _add1,address _add2) constant public returns(uint256) {
         return allowed[_add1][_add2];
     }
     //function to set balance from address
