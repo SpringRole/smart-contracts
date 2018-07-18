@@ -127,5 +127,9 @@ contract AttestStorage is Ownable {
   function setClaimLevel(string uid1,string ref_id,uint256 level) checkOwner(msg.sender) public {
       claims[uid1][ref_id].attest_level=level;
   }
+  //function to delete old claim
+    function deleteOldClaim(string uid1,string ref_id) checkOwner(msg.sender) public {
+      delete claims[uid1][ref_id];
+  }
     
 }

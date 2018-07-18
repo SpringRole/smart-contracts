@@ -29,5 +29,10 @@ contract Attestation {
     function  getAttestResults(uint256 index,string ref_id) public view returns(string,string,uint256,bool) {
         return storageAddress.getPaginationResults(index,ref_id);
     }
+    //function to update any current attribute like work ex,education etc
+    function updateAttribute(string uid,string ref_id,string _newclaim) public {
+       storageAddress.deleteOldClaim(uid,ref_id);
+       setClaim(uid,ref_id,_newclaim);
+    }
     
 }
