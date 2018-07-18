@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 
-contract Attestation {
+contract Attestation_stateless {
 
     event Attest(address _address,string _type,string _data);
 
