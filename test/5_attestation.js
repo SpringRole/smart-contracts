@@ -1,4 +1,4 @@
-var Attestation = artifacts.require("./Attestation.sol");
+var Attestation = artifacts.require("./Attestation_stateless.sol");
 
 contract('Attestation', function(accounts) {
 
