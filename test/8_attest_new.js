@@ -42,7 +42,7 @@ contract("NEW attestation",function(accounts){
         })
         it("should be able to get pagination results",function(){
             return attestInstance.getAttestResults.call(1,"r1").then((res)=>{
-                  assert.equal("intern at springrole",res[4],"they are equal");
+                  assert.equal("intern at springrole",res[0],"they are equal");
             })
         })
          it("should be able to update claim and level should become zero",function(){
@@ -51,8 +51,7 @@ contract("NEW attestation",function(accounts){
             }).then(res2=>{
                 return attestInstance.getAttestResults.call(2,"r1");
             }).then(ans=>{
-                console.log(ans);
-                assert.equal("work",ans[4],"equal");
+                assert.equal("work",ans[0],"equal");
                 assert.equal(0,ans[2].toNumber());
             });
          });

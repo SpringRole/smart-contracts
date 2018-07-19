@@ -75,6 +75,12 @@ contract SkillStorage is Ownable {
    }
    //function to endorse by any user
    function endorseByUser(string uid1,string skill_id,uint256 count,string data) checkOwner(msg.sender) public {
+       uint256 length=count-1;
+       bool possible;
+       for(uint256 i=0;i<length;i++) {
+           if(keccak256(endorsements[skill_id][i].data)!=keccak256("")) possible=true;
+       }
+       require(possible==false);
        endorsements[skill_id][count]=endorse(uid1,data);
    }
    //function get endorsement counter
