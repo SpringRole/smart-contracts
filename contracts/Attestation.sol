@@ -26,7 +26,7 @@ contract Attestation {
         attestDone(uid1,uid2,ref_id,_level);
     }
     //function to get pagination results
-    function  getAttestResults(uint256 index,string ref_id) public view returns(string,string,uint256,bool) {
+    function  getAttestResults(uint256 index,string ref_id) public view returns(string,string,uint256,bool,string) {
         return storageAddress.getPaginationResults(index,ref_id);
     }
     //function to update any current attribute like work ex,education etc

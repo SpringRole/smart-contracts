@@ -20,7 +20,7 @@ contract("Spring token upgrade with token vesting",function(accounts){
                 TokenVestingInstance=instance3
             });
         })
-        it("should give access to the VanityURL contract",function(){
+        it("should give access to the springtoken contract",function(){
             return vanityStorageInstance.allowAccess(vanityInstance.address,{from:accounts[0]}).then(function(ins){
                 //console.log(ins);
                 return vanityInstance.mint.call(10000,{from: accounts[1]});

@@ -112,9 +112,9 @@ contract AttestStorage is Ownable {
        attest_counter[ref_id]=count;
    }
   //get the details through the pagination function
-  function getPaginationResults(uint256 index,string ref_id) public view returns(string,string,uint256,bool) {
+  function getPaginationResults(uint256 index,string ref_id) public view returns(string,string,uint256,bool,string) {
       require(keccak256(attestings[ref_id][index].done_for)!=keccak256(""));
-      return (attestings[ref_id][index].done_for,attestings[ref_id][index].opposite_party_id,attestings[ref_id][index].attest_level,attestings[ref_id][index].active);
+      return (attestings[ref_id][index].done_for,attestings[ref_id][index].opposite_party_id,attestings[ref_id][index].attest_level,attestings[ref_id][index].active,claims[attestings[ref_id][index].done_for][ref_id].claim);
   }
   //function to get claim attest_level
   function getClaimLevel(string uid1,string ref_id) public view returns(uint256) {
