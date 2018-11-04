@@ -31,7 +31,7 @@ contract Ownable {
    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
    * account.
    */
-  function Ownable() {
+  constructor() public {
     owner = msg.sender;
   }
 
@@ -145,7 +145,7 @@ contract StandardToken is ERC20,Pausable {
     }
 
     /**
-    * @dev Aprove the passed address to spend the specified amount of tokens on behalf of msg.sender.
+    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
     * This only works when the allowance is 0. Cannot be used to change allowance.
     * https://github.com/ethereum/EIPs/issues/738#issuecomment-336277632
     * @param _spender The address which will spend the funds.
@@ -227,8 +227,8 @@ contract SPRINGToken is StandardToken {
   uint256 public totalSupply;
   uint256 public maxSupply;
 
-  /* Contructor function to set maxSupply*/
-  function SPRINGToken(uint256 _maxSupply){
+  /* Constructor function to set maxSupply*/
+  constructor(uint256 _maxSupply) public {
     maxSupply = _maxSupply;
   }
 

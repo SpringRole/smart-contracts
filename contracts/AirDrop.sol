@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.24;
 
 /**
  * @title Token
@@ -20,7 +20,7 @@ contract Ownable {
    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
    * account.
    */
-  function Ownable() {
+  constructor() public {
     owner = msg.sender;
   }
 
@@ -40,7 +40,7 @@ contract Ownable {
    */
   function transferOwnership(address newOwner) onlyOwner public {
     require(newOwner != address(0));
-    OwnershipTransferred(owner, newOwner);
+    emit OwnershipTransferred(owner, newOwner);
     owner = newOwner;
   }
 
@@ -54,7 +54,7 @@ contract AirDrop is Ownable {
   /*
     constructor function to set token address
    */
-  function AirDrop(address _tokenAddress){
+  constructor(address _tokenAddress) public {
     tokenInstance = Token(_tokenAddress);
   }
 
