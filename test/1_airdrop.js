@@ -1,4 +1,4 @@
-var InviteToken = artifacts.require("./InviteToken.sol");
+var SPRINGToken = artifacts.require("./SPRINGToken.sol");
 var AirDrop = artifacts.require("./AirDrop.sol");
 
 contract('Airdrop', function(accounts) {
@@ -13,7 +13,7 @@ contract('Airdrop', function(accounts) {
     before(function () {
         return AirDrop.deployed().then(function(instance) {
             airdropInstance = instance;
-            return InviteToken.deployed();
+            return SPRINGToken.deployed();
         }).then(function(token) {
             tokenInstance = token;
             airdropInstance.send(eth_contract_balance,{from:accounts[0]});
