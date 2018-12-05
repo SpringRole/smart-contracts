@@ -59,7 +59,7 @@ contract AirDrop is Ownable {
   }
 
   /*
-    Airdrop function which take up a array of address,token amount and eth amount and call the
+    Airdrop function which take up a array of address, single token amount and eth amount and call the
     transfer function to send the token plus send eth to the address is balance is 0
    */
   function doAirDrop(address[] _address, uint256 _amount, uint256 _ethAmount) onlyOwner public returns (bool) {
@@ -74,6 +74,17 @@ contract AirDrop is Ownable {
       }
     }
   }
+
+  /*
+    Airdrop function which take up a array of address, indvidual token amount and eth amount
+   */
+   function sendBatch(address[] _recipients, uint[] _values) onlyOwner public returns (bool) {
+         require(_recipients.length == _values.length);
+         for (uint i = 0; i < _values.length; i++) {
+             tokenInstance.transfer(_recipients[i], _values[i]);
+         }
+         return true;
+   }
 
 
   function transferEthToOnwer() onlyOwner public returns (bool) {
