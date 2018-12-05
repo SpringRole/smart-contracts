@@ -10,8 +10,8 @@ module.exports = {
     },
     ropsten: {
       provider: function() {
-              return new HDWalletProvider(["87BAA9CC66610DA8466516EFC29A6AFC167113EAEAE907637874A4F9AF01868F"],
-                    "https://ropsten.infura.io/BbBlRVGSUuAagrvyIjdr")
+              return new HDWalletProvider(["<Priv key goes here>"],
+                    "https://ropsten.infura.io/<Infura pub key>")
             },
       network_id: 3,
       gas: 4600000
