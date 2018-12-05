@@ -4,9 +4,9 @@ var SpringToken = artifacts.require("./SPRINGToken.sol");
 var Attestation = artifacts.require("./Attestation.sol");
 
 module.exports = function(deployer, network, accounts) {
-    deployer.deploy(SpringToken, 1000000)
+      deployer.deploy(SpringToken, 1000000)
     .then(function() {
-        return deployer.deploy(AirDrop, SpringToken);
+        return deployer.deploy(AirDrop, SpringToken.address);
     }).then(function() {
         return deployer.deploy(VanityURL);
     }).then(function() {
