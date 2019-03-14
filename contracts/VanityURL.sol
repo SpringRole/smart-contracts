@@ -1,90 +1,14 @@
 pragma solidity ^0.4.24;
 
-
-contract Ownable {
-
-    address public owner;
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    /**
-     * @dev The Ownable constructor sets the original `owner` of the contract to the sender
-     * account.
-     */
-    constructor() public {
-        owner = msg.sender;
-    }
-
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
-
-    /**
-     * @dev Allows the current owner to transfer control of the contract to a newOwner.
-     * @param newOwner The address to transfer ownership to.
-     */
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0x0));
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
-
-}
-
-
-/**
- * @title Pausable
- * @dev Base contract which allows children to implement an emergency stop mechanism.
- */
-contract Pausable is Ownable {
-    event Pause();
-    event Unpause();
-
-    bool public paused = false;
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is not paused.
-     */
-    modifier whenNotPaused() {
-        require(!paused);
-        _;
-    }
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is paused.
-     */
-    modifier whenPaused() {
-        require(paused);
-        _;
-    }
-
-    /**
-     * @dev called by the owner to pause, triggers stopped state
-     */
-    function pause() public onlyOwner whenNotPaused {
-        paused = true;
-        emit Pause();
-    }
-
-    /**
-    * @dev called by the owner to unpause, returns to normal state
-    */
-    function unpause() public onlyOwner whenPaused {
-        paused = false;
-        emit Unpause();
-    }
-}
-
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 /**
  * @title VanityURL
  * @dev The VanityURL contract provides functionality to reserve vanity URLs.
  * Go to https://springrole.com to reserve.
  */
-contract VanityURL is Ownable, Pausable {
+contract VanityURL is Ownable, Pausable {//, RelayRecipient {
 
     // This declares a state variable that mapping for vanityURL to address
     mapping (string => address) private vanity_address_mapping;
@@ -243,7 +167,7 @@ contract VanityURL is Ownable, Pausable {
      * @dev Function to kill contract
      */
     function kill() public onlyOwner {
-        selfdestruct(owner);
+        selfdestruct(owner());
     }
 
     /**

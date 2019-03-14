@@ -1,5 +1,7 @@
 pragma solidity ^0.4.24;
 
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+
 
 /**
  * @title Token
@@ -8,40 +10,6 @@ pragma solidity ^0.4.24;
 contract Token {
     function transfer(address to, uint256 value) public returns (bool);
     event Transfer(address indexed from, address indexed to, uint256 value);
-}
-
-
-contract Ownable {
-
-    address public owner;
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    /**
-     * @dev The Ownable constructor sets the original `owner` of the contract to the sender
-     * account.
-     */
-    constructor() public {
-        owner = msg.sender;
-    }
-
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
-
-    /**
-     * @dev Allows the current owner to transfer control of the contract to a newOwner.
-     * @param newOwner The address to transfer ownership to.
-     */
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0x0));
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-    }
-
 }
 
 
@@ -104,13 +72,13 @@ contract AirDrop is Ownable {
      * @dev Funtion to transfer Ether to owner
      */
     function transferEthToOnwer() public onlyOwner returns (bool) {
-        require(owner.send(address(this).balance));
+        require(owner().send(address(this).balance));
     }
 
     /**
      * @dev Function to kill contract. 
      */
     function kill() public onlyOwner {
-        selfdestruct(owner);
+        selfdestruct(owner());
     }
 }
