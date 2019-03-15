@@ -1,18 +1,13 @@
-var VanityURL = artifacts.require('./VanityURL.sol');
-var AirDrop = artifacts.require('./AirDrop.sol');
-var SpringToken = artifacts.require('./SPRINGToken.sol');
-var Attestation = artifacts.require('./Attestation.sol');
+const VanityURL = artifacts.require('./VanityURL.sol');
+const AirDrop = artifacts.require('./AirDrop.sol');
+const SpringToken = artifacts.require('./SPRINGToken.sol');
+const Attestation = artifacts.require('./Attestation.sol');
 
-module.exports = function(deployer, network, accounts) {
-  deployer
-    .deploy(SpringToken, 1000000)
-    .then(function() {
-      return deployer.deploy(AirDrop, SpringToken.address);
-    })
-    .then(function() {
-      return deployer.deploy(VanityURL);
-    })
-    .then(function() {
-      return deployer.deploy(Attestation);
-    });
+module.exports = function(deployer) {
+  deployer.then(async () => {
+    await deployer.deploy(SpringToken, 1000000);
+    await deployer.deploy(AirDrop, SpringToken.address);
+    await deployer.deploy(VanityURL);
+    await deployer.deploy(Attestation);
+  });
 };
