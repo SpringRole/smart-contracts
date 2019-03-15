@@ -14,6 +14,7 @@
     "openzeppelin-solidity": "2.0.0",
     "prettier": "^1.16.4",
     "solidity-coverage": "^0.5.11",
+    "tabookey-gasless": "^0.3.3-a",
     "truffle": "4.1.15",
     "truffle-hdwallet-provider-privkey": "^0.3.0"
   },
