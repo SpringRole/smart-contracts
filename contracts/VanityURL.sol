@@ -2,7 +2,6 @@ pragma solidity ^0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
-import "tabookey-gasless/contracts/RelayHub.sol";
 import "tabookey-gasless/contracts/RelayRecipient.sol";
 
 
