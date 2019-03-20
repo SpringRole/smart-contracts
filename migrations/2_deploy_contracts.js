@@ -6,9 +6,12 @@ const RelayHub = artifacts.require('./RelayHub.sol');
 
 const relayHubAddr = '0x9C57C0F1965D225951FE1B2618C92Eefd687654F';
 
+const MAX_SUPPLY =
+  '0x130303030303030303030303030303030303030303030303030303030'; // 10000000000 Tokens in HEX
+
 module.exports = function(deployer) {
   deployer.then(async function() {
-    await deployer.deploy(SpringToken, 1000000);
+    await deployer.deploy(SpringToken, MAX_SUPPLY);
     await deployer.deploy(AirDrop, SpringToken.address);
     let relayHub = await RelayHub.at(relayHubAddr);
     await deployer.deploy(VanityURL, relayHub.address);
