@@ -15,7 +15,9 @@
     "truffle": "^5.0.8",
     "truffle-hdwallet-provider-privkey": "^0.3.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "openzeppelin-test-helpers": "^0.2.0"
+  },
   "scripts": {
     "test": "truffle test",
     "pretty": "prettier --write --single-quote --tab-width 2 \"**/*.js\"",
