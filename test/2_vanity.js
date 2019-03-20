@@ -1,302 +1,197 @@
-var VanityURL = artifacts.require('./VanityURL.sol');
+const VanityURL = artifacts.require('./VanityURL.sol');
 
-contract('VanityURL', function(accounts) {
-  var vanityInstance;
+const { shouldFail } = require('openzeppelin-test-helpers');
 
-  before(function() {
-    return VanityURL.deployed().then(function(instance) {
-      vanityInstance = instance;
+contract('VanityURL', function([owner, user1, user2, user3, user4, user5]) {
+  let vanityInstance;
+
+  before(async function() {
+    vanityInstance = await VanityURL.deployed();
+  });
+
+  describe('reserve a Vanity url', function() {
+    before(async function() {
+      await vanityInstance.reserve('vinay_035', 'srind1', { from: user1 });
+    });
+
+    it('Should be able to retrive the same wallet address', async function() {
+      (await vanityInstance.retrieveWalletForVanity.call(
+        'vinay_035'
+      )).should.equal(user1);
+    });
+
+    it('Should be able to retrive the same Vanity', async function() {
+      (await vanityInstance.retrieveVanityForWallet.call(user1)).should.equal(
+        'vinay_035'
+      );
+    });
+
+    it('Should be able to retrive the same springrole id', async function() {
+      (await vanityInstance.retrieveSpringroleIdForVanity.call(
+        'vinay_035'
+      )).should.equal('srind1');
+    });
+
+    it('Should be able to retrive the same Vanity', async function() {
+      (await vanityInstance.retrieveVanityForSpringroleId.call(
+        'srind1'
+      )).should.equal('vinay_035');
     });
   });
 
-  it('should be able to reserve a url', function() {
-    return vanityInstance
-      .reserve('vinay_035', 'srind1', { from: accounts[1] })
-      .then(function(instance) {
-        return vanityInstance.retrieveWalletForVanity.call('vinay_035');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          accounts[1],
-          'Should be able to retrive the same wallet address'
-        );
-        return vanityInstance.retrieveVanityForWallet.call(accounts[1]);
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          'vinay_035',
-          'Should be able to retrive the same vanity'
-        );
-        return vanityInstance.retrieveSpringroleIdForVanity.call('vinay_035');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          'srind1',
-          'Should be able to retrive the same springrole id'
-        );
-        return vanityInstance.retrieveVanityForSpringroleId.call('srind1');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          'vinay_035',
-          'Should be able to retrive the same vanity'
-        );
-      })
-      .catch(function(error) {
-        assert.isUndefined(error, 'should be able to reserve a url');
-      });
+  describe('reserve a Vanity url (case insensitive)', function() {
+    before(async function() {
+      await vanityInstance.reserve('CASEIN', 'srind2', { from: user2 });
+    });
+
+    it('Should be able to retrive the same wallet address', async function() {
+      (await vanityInstance.retrieveWalletForVanity.call(
+        'casein'
+      )).should.equal(user2);
+    });
+
+    it('Should be able to retrive the same Vanity', async function() {
+      (await vanityInstance.retrieveVanityForWallet.call(user2)).should.equal(
+        'casein'
+      );
+    });
+
+    it('Should be able to retrive the same springrole id', async function() {
+      (await vanityInstance.retrieveSpringroleIdForVanity.call(
+        'casein'
+      )).should.equal('srind2');
+    });
+
+    it('Should be able to retrive the same Vanity', async function() {
+      (await vanityInstance.retrieveVanityForSpringroleId.call(
+        'srind2'
+      )).should.equal('casein');
+    });
   });
 
-  it('reserve url should be case insensitive', function() {
-    return vanityInstance
-      .reserve('CASEIN', 'srind2')
-      .then(function(instance) {
-        return vanityInstance.retrieveWalletForVanity.call('casein');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          accounts[0],
-          'Should be able to retrive the same wallet address'
-        );
-        return vanityInstance.retrieveVanityForWallet.call(accounts[0]);
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          'casein',
-          'reserve url should be case insensitive'
-        );
-        return vanityInstance.retrieveSpringroleIdForVanity.call('casein');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          'srind2',
-          'Should be able to retrive the same springrole id'
-        );
-        return vanityInstance.retrieveVanityForSpringroleId.call('srind2');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          'casein',
-          'Should be able to retrive the same vanity'
-        );
-      })
-      .catch(function(error) {
-        assert.isUndefined(error, 'should be able to reserve a url');
-      });
+  describe('reserve a non alphanumeric Vanity url', function() {
+    it('should fail and revert', async function() {
+      await shouldFail.reverting(
+        vanityInstance.reserve('Vi@345', 'srind3', { from: user3 })
+      );
+    });
   });
 
-  it('should fail when tried to reserve non alphanumeric keywords', function() {
-    return vanityInstance
-      .reserve('Vi@345')
-      .then(function(instance) {
-        assert.isUndefined(
-          instance,
-          'should fail when tried to reserve non alphanumeric keywords'
-        );
-      })
-      .catch(function(error) {
-        assert.isDefined(
-          error,
-          'should fail when tried to reserve non alphanumeric keywords'
-        );
-      });
+  describe('reserve a Vanity url of less than 4 characters', function() {
+    it('should fail and revert', async function() {
+      await shouldFail.reverting(
+        vanityInstance.reserve('van', 'srind3', { from: user3 })
+      );
+    });
   });
 
-  it('should fail when tried to reserve less then 4 characters', function() {
-    return vanityInstance
-      .reserve('van')
-      .then(function(instance) {
-        assert.isUndefined(
-          instance,
-          'should fail when tried to reserve less then 4 characters'
-        );
-      })
-      .catch(function(error) {
-        assert.isDefined(
-          error,
-          'should fail when tried to reserve less then 4 characters'
-        );
-      });
+  describe('reserve a already reserved Vanity url', function() {
+    it('should fail and revert', async function() {
+      await shouldFail.reverting(
+        vanityInstance.reserve('vinay_035', 'srind3', { from: user3 })
+      );
+    });
   });
 
-  it('should fail when tried to reserve already reserved keyword', function() {
-    return vanityInstance
-      .reserve('vinay035')
-      .then(function(instance) {
-        assert.isUndefined(
-          instance,
-          'should fail when tried to reserve lready reserved keyword'
-        );
-      })
-      .catch(function(error) {
-        assert.isDefined(
-          error,
-          'should fail when tried to reserve already reserved keyword'
-        );
+  describe('transfer a Vanity url', function() {
+    it('should be able to transfer ownership of Vanity url to other user', async function() {
+      await vanityInstance.transferOwnershipForVanityURL(user3, {
+        from: user1
       });
+    });
+
+    it('should be able to retrive the same Vanity', async function() {
+      (await vanityInstance.retrieveVanityForWallet.call(user3)).should.equal(
+        'vinay_035'
+      );
+    });
+
+    it('should be able to retrive the new wallet address', async function() {
+      (await vanityInstance.retrieveWalletForVanity.call(
+        'vinay_035'
+      )).should.equal(user3);
+    });
   });
 
-  it('should be able to transfer a vanity', function() {
-    return vanityInstance
-      .transferOwnershipForVanityURL(accounts[3], { from: accounts[1] })
-      .then(function(instance) {
-        return vanityInstance.retrieveWalletForVanity.call('vinay_035');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          accounts[3],
-          'Should be able to retrive the same wallet address'
-        );
-        return vanityInstance.retrieveVanityForWallet.call(accounts[3]);
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          'vinay_035',
-          'Should be able to retrive the same vanity'
-        );
-      })
-      .catch(function(error) {
-        assert.isUndefined(error, 'should be able to reserve a url');
-      });
-  });
-
-  it('owner only should be able to release a vanity', function() {
-    return vanityInstance
-      .releaseVanityUrl('casein', { from: accounts[3] })
-      .then(function(instance) {
-        assert.isDefined(
-          instance,
-          'owner only should be able to release a vanity'
-        );
-      })
-      .catch(function(error) {
-        assert.isDefined(error, 'owner should be able to release a vanity');
-      });
-  });
-
-  it('owner should be able to release a vanity', function() {
-    return vanityInstance
-      .releaseVanityUrl('casein')
-      .then(function(instance) {
-        return vanityInstance.retrieveWalletForVanity.call('casein');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          '0x0000000000000000000000000000000000000000',
-          'owner should be able to release a vanity'
-        );
-        return vanityInstance.retrieveSpringroleIdForVanity.call('casein');
-      })
-      .then(function(result) {
-        assert.equal(result, '', 'owner should be able to release a vanity');
-      })
-      .catch(function(error) {
-        assert.isUndefined(error, 'owner should be able to release a vanity');
-      });
-  });
-
-  it('owner only should be able to call reserveVanityURLByOwner', function() {
-    return vanityInstance
-      .reserveVanityURLByOwner(accounts[4], 'testowner', 'srind3', '0x', {
-        from: accounts[3]
-      })
-      .then(function(instance) {
-        assert.isDefined(
-          instance,
-          'owner only should be able to call reserveVanityURLByOwner'
-        );
-      })
-      .catch(function(error) {
-        assert.isDefined(
-          error,
-          'owner only should be able to call reserveVanityURLByOwner'
+  describe('Not a dApp owner', function() {
+    describe('Release Vanity url', function() {
+      it('should not be able to release url', async function() {
+        await shouldFail.reverting(
+          vanityInstance.releaseVanityUrl('casein', { from: user4 })
         );
       });
+    });
+
+    describe('Reserve a Vanity url for other user', function() {
+      it('should not be able to reserve a url', async function() {
+        await shouldFail.reverting(
+          vanityInstance.reserveVanityURLByOwner(
+            user3,
+            'testowner',
+            'srind3',
+            '0x',
+            { from: user4 }
+          )
+        );
+      });
+    });
   });
 
-  it('owner should be able to call reserveVanityURLByOwner and assign a vanity to any address', function() {
-    return vanityInstance
-      .reserveVanityURLByOwner(accounts[4], 'testowner', 'srind3', '0x')
-      .then(function(instance) {
-        return vanityInstance.retrieveWalletForVanity.call('testowner');
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
-          accounts[4],
-          'Should be able to retrive the same wallet address'
-        );
-        return vanityInstance.retrieveVanityForWallet.call(accounts[4]);
-      })
-      .then(function(result) {
-        assert.equal(
-          result,
+  describe('dApp owner', function() {
+    describe('Release Vanity url', function() {
+      it('should be able to release url', async function() {
+        vanityInstance.releaseVanityUrl('casein', { from: owner });
+      });
+    });
+
+    describe('Reserve a Vanity url for other user', function() {
+      it('should be able to reserve Vanity URL for others', async function() {
+        await vanityInstance.reserveVanityURLByOwner(
+          user4,
           'testowner',
-          'Should be able to retrive the same vanity'
-        );
-      })
-      .catch(function(error) {
-        assert.isUndefined(
-          error,
-          'owner should be able to call reserveVanityURLByOwner and assign a vanity to any address'
+          'srind3',
+          '0x',
+          { from: owner }
         );
       });
+
+      it('reserved Vanity url should be assigned to user', async function() {
+        (await vanityInstance.retrieveVanityForWallet.call(user4)).should.equal(
+          'testowner'
+        );
+      });
+
+      it('reserved Vanity url should be able to retrive from assigned user wallet address', async function() {
+        (await vanityInstance.retrieveWalletForVanity.call(
+          'testowner'
+        )).should.equal(user4);
+      });
+    });
   });
 
-  it('should error on change vanityURL when address has no vanity', function() {
-    return vanityInstance
-      .changeVanityURL('noassigned', { from: accounts[5] })
-      .then(function(instance) {
-        assert.isUndefined(
-          instance,
-          'should error on change vanityURL when not assigned'
-        );
-      })
-      .catch(function(error) {
-        assert.isDefined(
-          error,
-          'should error on change vanityURL when not assigned'
+  describe('Change Vanity URL', function() {
+    describe('address has no Vanity URL', function() {
+      it('should fail and revert', async function() {
+        await shouldFail.reverting(
+          vanityInstance.changeVanityURL('noassigned', 'srind4', {
+            from: user5
+          })
         );
       });
-  });
-
-  it('should error on change vanityURL when vanity is in use', function() {
-    return vanityInstance
-      .changeVanityURL('vinay035', 'srind4', { from: accounts[3] })
-      .then(function(instance) {
-        assert.isUndefined(
-          instance,
-          'should error on change vanityURL when not assigned'
-        );
-      })
-      .catch(function(error) {
-        assert.isDefined(
-          error,
-          'should error on change vanityURL when not assigned'
+    });
+    describe('when vanity is in use', function() {
+      it('should fail and revert', async function() {
+        await shouldFail.reverting(
+          vanityInstance.changeVanityURL('vinay_035', 'srind4', { from: user2 })
         );
       });
-  });
-
-  it('should be able to change vanityURL', function() {
-    return vanityInstance
-      .changeVanityURL('vinay0351', 'srind5', { from: accounts[3] })
-      .then(function(instance) {
-        assert.isDefined(instance, 'should be able to change vanityURL');
-      })
-      .catch(function(error) {
-        console.log(error);
-        assert.isUndefined(error, 'should be able to change vanityURL');
+    });
+    describe('have assigned Vanity and new Vanity url not in use', function() {
+      it('should be able to change Vanity url', async function() {
+        vanityInstance.changeVanityURL('nervehammer', 'srind2', {
+          from: user2
+        });
       });
+    });
   });
 });

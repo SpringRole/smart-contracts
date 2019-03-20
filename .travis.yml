@@ -13,8 +13,8 @@ cache:
     - node_modules
 
 before_install:
-  - docker pull tabookey/gsn-dev-server
-  - docker run -t --name gsn-dock --rm -p 8090:8090 -p 8545:8545 tabookey/gsn-dev-server:v0.3.1 /start-relay-with-ganache.sh
+  - docker pull tabookey/gsn-dev-server:v0.3.1
+  - docker run -d --name gsn-dock --rm -p 8090:8090 -p 8545:8545 tabookey/gsn-dev-server:v0.3.1 /start-relay-with-ganache.sh
 
 install:
   - npm install -g truffle
