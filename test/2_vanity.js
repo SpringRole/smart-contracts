@@ -182,15 +182,28 @@ contract('VanityURL', function([owner, user1, user2, user3, user4, user5]) {
     describe('when vanity is in use', function() {
       it('should fail and revert', async function() {
         await shouldFail.reverting(
-          vanityInstance.changeVanityURL('vinay_035', 'srind4', { from: user2 })
+          vanityInstance.changeVanityURL('vinay_035', 'srind4', { from: user3 })
         );
       });
     });
-    describe('have assigned Vanity and new Vanity url not in use', function() {
+
+    describe('have an existing Vanity url and new Vanity url not in use', function() {
       it('should be able to change Vanity url', async function() {
-        vanityInstance.changeVanityURL('nervehammer', 'srind2', {
-          from: user2
+        await vanityInstance.changeVanityURL('nervehammer', 'srind4', {
+          from: user3
         });
+      });
+
+      it('Vanity url should be assigned to user', async function() {
+        (await vanityInstance.retrieveVanityForWallet.call(user3)).should.equal(
+          'nervehammer'
+        );
+      });
+
+      it('Vanity url should be able to retrive from assigned user wallet address', async function() {
+        (await vanityInstance.retrieveWalletForVanity.call(
+          'nervehammer'
+        )).should.equal(user3);
       });
     });
   });

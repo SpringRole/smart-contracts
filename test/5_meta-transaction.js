@@ -1,9 +1,9 @@
 const Attestation = artifacts.require('Attestation');
 const RelayHub = artifacts.require('RelayHub');
-const RelayProvider = require('./utils/RelayProvider');
+const { RelayProvider } = require('tabookey-gasless');
 const relayHubAddr = '0x9C57C0F1965D225951FE1B2618C92Eefd687654F';
 
-contract('Meta Transaction Test', function() {
+contract('Attestation & VanityURL (meta txns test)', function() {
   let att;
   let gasless;
   let gasPrice;
