@@ -6,6 +6,10 @@ const { RelayProvider } = require('tabookey-gasless');
 const { expectEvent } = require('openzeppelin-test-helpers');
 const relayHubAddr = '0x9C57C0F1965D225951FE1B2618C92Eefd687654F';
 
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 contract('Attestation & VanityURL (meta txns test)', function([
   _,
   anotherUser
@@ -28,9 +32,9 @@ contract('Attestation & VanityURL (meta txns test)', function([
   describe('enable relay', function() {
     it('should be able to enable relay', async function() {
       relay_client_config = {
-        txfee: 30,
+        txfee: 60,
         force_gasPrice: gasPrice, //override requested gas price
-        force_gasLimit: 800000, //override requested gas limit.
+        force_gasLimit: 900000, //override requested gas limit.
         verbose: process.env.DEBUG
       };
       let relayProvider = await new RelayProvider(
@@ -45,6 +49,7 @@ contract('Attestation & VanityURL (meta txns test)', function([
 
   describe('Attestation:', function() {
     it('should be able to send gasless tranasactions and emit Attest event', async function() {
+      await timeout(5000);
       const { logs } = await attestationInstance.write(
         'some_type',
         'some_data',
@@ -63,6 +68,7 @@ contract('Attestation & VanityURL (meta txns test)', function([
   describe('VanityURL:', function() {
     describe('reserve a Vanity url', function() {
       before(async function() {
+        await timeout(5000);
         await vanityInstance.reserve('sr_user', 'srind1', { from: gasless });
       });
 
@@ -93,6 +99,7 @@ contract('Attestation & VanityURL (meta txns test)', function([
 
     describe('Change Vanity URL', function() {
       it('should be able to change Vanity url', async function() {
+        await timeout(5000);
         await vanityInstance.changeVanityURL('nervehammer', 'srind2', {
           from: gasless
         });
@@ -113,6 +120,7 @@ contract('Attestation & VanityURL (meta txns test)', function([
 
     describe('transfer a Vanity url', function() {
       it('should be able to transfer ownership of Vanity url to other user', async function() {
+        await timeout(5000);
         await vanityInstance.transferOwnershipForVanityURL(anotherUser, {
           from: gasless
         });
