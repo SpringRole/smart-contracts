@@ -16,7 +16,7 @@ module.exports = function(deployer) {
     let relayHub = await RelayHub.at(relayHubAddr);
     await deployer.deploy(VanityURL, relayHub.address);
     await deployer.deploy(Attestation, relayHub.address);
-    await relayHub.depositFor(VanityURL.address, { value: 1e18 });
+    await relayHub.depositFor(VanityURL.address, { value: 2e18 });
     await relayHub.depositFor(Attestation.address, { value: 1e18 });
   });
 };

@@ -100,7 +100,6 @@ contract VanityURL is Ownable, Pausable, RelayRecipient {
      * 6. Update the mapping variables
      */
     function reserve(string _vanity_url, string _springrole_id) public whenNotPaused {
-        //TODO: Function call through trusted relays
         _vanity_url = _toLower(_vanity_url);
         require(checkForValidity(_vanity_url));
         require(vanity_address_mapping[_vanity_url] == address(0x0));
@@ -127,7 +126,6 @@ contract VanityURL is Ownable, Pausable, RelayRecipient {
      * 6. Update the mapping variables
      */
     function changeVanityURL(string _vanity_url, string _springrole_id) public whenNotPaused {
-        //TODO: Function call through trusted relays
         require(bytes(address_vanity_mapping[get_sender()]).length != 0);
         require(bytes(springrole_id_vanity_mapping[_springrole_id]).length == 0);
         _vanity_url = _toLower(_vanity_url);
@@ -146,7 +144,6 @@ contract VanityURL is Ownable, Pausable, RelayRecipient {
      * @dev Function to transfer ownership for Vanity URL
      */
     function transferOwnershipForVanityURL(address _to) public whenNotPaused {
-        //TODO: Function call through trusted relays
         require(bytes(address_vanity_mapping[_to]).length == 0);
         require(bytes(address_vanity_mapping[get_sender()]).length != 0);
         address_vanity_mapping[_to] = address_vanity_mapping[get_sender()];
