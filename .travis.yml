@@ -3,14 +3,25 @@ sudo: false
 
 language: node_js
 node_js:
-  - "7"
+  - "10"
+
+services:
+  - docker
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+  - docker pull tabookey/gsn-dev-server:v0.3.1
 
 install:
-  - npm install -g ethereumjs-testrpc
+  - npm install -g truffle
   - npm install
 
 before_script:
-  - testrpc -l 6721975 > testrpc.log &
+  - docker run --name gsn-dock --rm -p 8090:8090 -p 8545:8545 tabookey/gsn-dev-server:v0.3.1 /start-relay-with-ganache.sh > /dev/null 2>&1 &
 
 script:
+  - sleep 15
   - npm test

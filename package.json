@@ -7,13 +7,33 @@
     "test": "test"
   },
   "dependencies": {
-    "solc": "^0.4.25",
-    "truffle": "^4.1.14",
+    "husky": "^1.3.1",
+    "lint-staged": "^8.1.5",
+    "openzeppelin-solidity": "2.0.0",
+    "prettier": "^1.16.4",
+    "tabookey-gasless": "^0.3.3-a",
+    "truffle": "^5.0.8",
     "truffle-hdwallet-provider-privkey": "^0.3.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "openzeppelin-test-helpers": "^0.2.0"
+  },
   "scripts": {
-    "test": "truffle test"
+    "test": "truffle test",
+    "pretty": "prettier --write --single-quote --tab-width 2 \"**/*.js\"",
+    "gsn-dock-relay": "npm explore tabookey-gasless npm run gsn-dock-relay",
+    "gsn-dock-relay-ganache": "npm explore tabookey-gasless npm run gsn-dock-relay-ganache"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,json}": [
+      "prettier --single-quote --write --tab-width 2",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",

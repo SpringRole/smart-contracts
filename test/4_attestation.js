@@ -1,20 +1,26 @@
-var Attestation = artifacts.require("./Attestation.sol");
+const Attestation = artifacts.require('./Attestation.sol');
 
-contract('Attestation', function(accounts) {
+const { expectEvent } = require('openzeppelin-test-helpers');
 
-    var attestationInstance;
+contract('Attestation', function([_, user1, user2]) {
+  let attestationInstance;
 
-    before(function () {
-        return Attestation.deployed().then(function(instance) {
-            attestationInstance = instance;
-        });
+  before(async function() {
+    attestationInstance = await Attestation.deployed();
+  });
+
+  it('should be able to write to blockchain', async function() {
+    await attestationInstance.write('_type', '_data', { from: user1 });
+  });
+
+  it('should be emit Attest event', async function() {
+    const { logs } = await attestationInstance.write('some_type', 'some_data', {
+      from: user2
     });
-
-    it("should write to blockchain", function() {
-        return attestationInstance.write('_type','_data').then(function(instance){
-            assert.isDefined(instance,"should be able to write to blockchain")
-        }).catch(function(error){
-            assert.isUndefined(error,"should be able to write to blockchain")
-        })
+    expectEvent.inLogs(logs, 'Attest', {
+      _address: user2,
+      _type: 'some_type',
+      _data: 'some_data'
     });
+  });
 });
