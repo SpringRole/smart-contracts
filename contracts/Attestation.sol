@@ -4,9 +4,14 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "tabookey-gasless/contracts/RelayRecipient.sol";
 
 
+/**
+ * Attestation contract to enter event data for all attestations
+ */
 contract Attestation is Ownable, RelayRecipient {
 
     event Attest(address _address, string _type, string _data);
+    event AttestByOwner(string _address, string _type, string _data);
+
     mapping (address => bool) public relays_whitelist;
     
     address public blacklisted;
@@ -15,8 +20,19 @@ contract Attestation is Ownable, RelayRecipient {
         init_relay_hub(rhub);
     }
 
+    /**
+     * Function use by user to attest
+     */
     function write(string _type, string _data) public returns (bool) {
         emit Attest(get_sender(), _type, _data);
+        return true;
+    }
+
+    /**
+     * Function use by DApp owner to be committed in case of data migration
+     */
+    function writeByOwner(string _type, string _data, string _address) public onlyOwner returns (bool) {
+        emit AttestByOwner(_address, _type, _data);
         return true;
     }
 
@@ -55,6 +71,5 @@ contract Attestation is Ownable, RelayRecipient {
         public
     {
         //TODO: Implement anything post relay call if needed.
-        
     }
 }
